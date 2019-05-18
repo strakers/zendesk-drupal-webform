@@ -37,4 +37,5 @@ xmlrpc.php
 /profiles
 /scripts
 vendor
+libraries
 .idea

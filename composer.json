@@ -1,11 +1,12 @@
 {
     "name": "strakez/zendesk_webform",
     "description": "Adds the ability to create Zendesk tickets from Drupal Webforms",
-    "type": "drupal-module",
+    "type": "drupal-custom-module",
     "keywords": ["Drupal", "Zendesk", "Webform"],
     "require": {
         "php": ">=5.6",
-        "zendesk/zendesk_api_client_php": "^2.2"
+        "zendesk/zendesk_api_client_php": "^2.2",
+        "drupal/core": "8.8.x-dev"
     },
     "license": "MIT",
     "authors": [
@@ -14,5 +15,23 @@
             "email": "contact@atrakez.com"
         }
     ],
-    "minimum-stability": "dev"
+    "repositories": {
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "installer-paths": {
+            "core": ["type:drupal-core"],
+            "libraries/{$name}": ["type:drupal-library"],
+            "modules/contrib/{$name}": ["type:drupal-module"],
+            "profiles/contrib/{$name}": ["type:drupal-profile"],
+            "themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/{$name}": ["type:drupal-drush"],
+            "modules/custom/{$name}": ["type:drupal-custom-module"],
+            "themes/custom/{$name}": ["type:drupal-custom-theme"]
+        }
+    }
 }
