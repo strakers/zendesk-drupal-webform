@@ -38,10 +38,10 @@ class SettingsForm extends ConfigFormBase
             '#default_value' => $config->get('subdomain')
         ];
 
-        $form['admin_email'] = [
+        $form['user_email'] = [
             '#type' => 'email',
-            '#title' => $this->t('Zendesk Account Email'),
-            '#description' => $this->t('The email address of your Zendesk admin account'),
+            '#title' => $this->t('Zendesk Account Email Address'),
+            '#description' => $this->t('The email address of your Zendesk account'),
             '#default_value' => $config->get('admin_email')
         ];
 
@@ -61,7 +61,7 @@ class SettingsForm extends ConfigFormBase
 
         $this->config('zendesk_webform.adminsettings')
             ->set('subdomain',$form_state->getValue('subdomain'))
-            ->set('admin_email',$form_state->getValue('admin_email'))
+            ->set('user_email',$form_state->getValue('user_email'))
             ->set('web_token',$form_state->getValue('web_token'))
             ->save()
         ;
