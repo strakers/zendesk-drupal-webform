@@ -7,13 +7,20 @@
  */
 
 namespace Drupal\zendesk_webform\Form;
-
-
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ * Class SettingsForm
+ * Contains Drupal\welcome\Form\MessagesForm.
+ * @package Drupal\zendesk_webform\Form
+ * @file
+ */
 class SettingsForm extends ConfigFormBase
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function getEditableConfigNames()
     {
         return [
@@ -21,11 +28,17 @@ class SettingsForm extends ConfigFormBase
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFormId()
     {
         return 'zendesk_webform_form';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(array $form, FormStateInterface $form_state)
     {
 
@@ -55,6 +68,9 @@ class SettingsForm extends ConfigFormBase
         return parent::buildForm($form, $form_state);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
         parent::submitForm($form, $form_state);
