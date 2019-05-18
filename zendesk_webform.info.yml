@@ -1,0 +1,13 @@
+name: Zendesk Webform
+description: Adds the ability to create Zendesk tickets from Drupal Webforms
+package: Zendesk
+
+type: module
+# core: 8.x
+
+dependencies:
+  - drupal:webform
+
+version: '1.0'
+core: '8.x'
+project: 'zendesk_webform'
