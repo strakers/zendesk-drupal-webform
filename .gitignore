@@ -36,4 +36,5 @@ xmlrpc.php
 /modules
 /profiles
 /scripts
-/themes
+vendor
+.idea
