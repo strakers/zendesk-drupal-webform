@@ -6,7 +6,8 @@
     "require": {
         "php": ">=5.6",
         "zendesk/zendesk_api_client_php": "^2.2",
-        "drupal/core": "8.8.x-dev"
+        "drupal/core": "8.8.x-dev",
+        "drupal/webform": "5.x-dev"
     },
     "license": "MIT",
     "authors": [

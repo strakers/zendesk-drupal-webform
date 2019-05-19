@@ -1,5 +1,5 @@
 zendesk_webform.admin_settings_form:
-  path: '/admin/config/zendesk_webform/settings'
+  path: '/admin/config/system/zendesk_integration'
   defaults:
     _form: '\Drupal\zendesk_webform\Form\SettingsForm'
     _title: 'ZendeskSettingsForm'

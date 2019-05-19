@@ -55,7 +55,7 @@ class SettingsForm extends ConfigFormBase
             '#type' => 'email',
             '#title' => $this->t('Zendesk Account Email Address'),
             '#description' => $this->t('The email address of your Zendesk account'),
-            '#default_value' => $config->get('admin_email')
+            '#default_value' => $config->get('user_email')
         ];
 
         $form['web_token'] = [
