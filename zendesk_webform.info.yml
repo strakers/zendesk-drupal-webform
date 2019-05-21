@@ -12,6 +12,6 @@ version: '0.0.1'
 core: '8.x'
 project: 'zendesk_webform'
 
-configure: zendesk_webform.settings
+configure: zendesk_webform.admin_settings
 
 php: 5.6
