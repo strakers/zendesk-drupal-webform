@@ -4,6 +4,7 @@
 ### Added
 - Formatting and conditional helper functions
 - Token manager for placeholder parsing
+- Handler settings summary for display/listing page
 
 ### Changed
 - Redefine default configuration fields
