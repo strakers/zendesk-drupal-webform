@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.0.2] - 2019-05-21
 ### Added
 - Formatting and conditional helper functions
 - Token manager for placeholder parsing
