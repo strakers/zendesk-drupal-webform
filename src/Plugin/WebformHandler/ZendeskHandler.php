@@ -41,6 +41,25 @@ class ZendeskHandler extends WebformHandlerBase
     /**
      * {@inheritdoc}
      */
+    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+        $static = new static(
+            $configuration,
+            $plugin_id,
+            $plugin_definition,
+            $container->get('logger.factory'),
+            $container->get('config.factory'),
+            $container->get('entity_type.manager'),
+            $container->get('webform_submission.conditions_validator')
+        );
+        $static->setTokenManager(
+            $container->get('webform.token_manager')
+        );
+        return $static;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function defaultConfiguration()
     {
         return [
