@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Parsing for CC email addresses
 
 ## [0.0.2] - 2019-05-21
 ### Added

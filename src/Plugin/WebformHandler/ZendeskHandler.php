@@ -72,6 +72,8 @@ class ZendeskHandler extends WebformHandlerBase
             'type' => 'question',
             'collaborators' => '',
             'custom_fields' => '',
+
+            // todo: look into attachments handling
         ];
     }
 
@@ -279,6 +281,7 @@ class ZendeskHandler extends WebformHandlerBase
 
             // clean up tags
             $request['tags'] = $this->cleanTags( $request['tags'] );
+            $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
 
             // restructure comment array
             if(!isset($request['comment']['body'])){
