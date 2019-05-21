@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Parsing for CC email addresses
+- Add new Zendesk ticket ID to submission notes
 
 ### Changed
 - Updated settings form fields with field descriptions

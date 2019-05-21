@@ -331,8 +331,12 @@ class ZendeskHandler extends WebformHandlerBase
             // attempt to send request to create zendesk ticket
             try {
                 $client = new ZendeskClient();
-                $ticket = $client->tickets()->create($request);
+                $new_ticket = $client->tickets()->create($request);
+
                 // add ticket ID to submission notes.
+                if( $new_ticket ) {
+                    $webform_submission->setElementData('notes', 'Ticket: ' . $new_ticket->ticket->id . PHP_EOL );
+                }
             }
             catch( \Exception $e ){
 
@@ -412,6 +416,6 @@ class ZendeskHandler extends WebformHandlerBase
      * @return string
      */
     protected function cleanTags( $text = '' ){
-        return strtolower(implode(' ',preg_split("/[^a-z0-9_]+/i",$text)));
+        return implode(' ',preg_split("/[^a-z0-9_]+/i",strtolower($text)));
     }
 }
