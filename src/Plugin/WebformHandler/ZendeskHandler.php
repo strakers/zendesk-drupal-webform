@@ -35,12 +35,22 @@ class ZendeskHandler extends WebformHandlerBase
         return [
             'requester' => '',
             'subject' => '',
-            'comment' => '',
-            'tags' => '',
-            'priority' => '',
-            'status' => '',
+            'comment' => '[webform_submission:values]', // by default lists all submission values as body
+            'tags' => 'drupal webform',
+            'priority' => 'normal',
+            'status' => 'new',
+            'type' => 'question',
             'collaborators' => '',
+            'custom_fields' => '',
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function defaultConfigurationNames()
+    {
+        return array_keys( $this->defaultConfiguration() );
     }
 
     /**
@@ -48,19 +58,30 @@ class ZendeskHandler extends WebformHandlerBase
      */
     public function buildConfigurationForm(array $form, FormStateInterface $form_state)
     {
-        /*$form['external_id'] = [
-            '#type' => 'integer',
-            '#title' => $this->t('Requester email address'),
-            '#description' => $this->t(''),
-            //'#value' => $form_state->form_id,
-            '#disabled' => true
-        ];*/
+
+
+        $webform_fields = $this->getWebform()->getElementsDecoded();
+        $options_email = [''];
+
+        foreach($webform_fields as $key => $field){
+            if( $this->checkIsGroupingField($field) ){
+                foreach($field as $subkey => $subfield){
+                    if(!preg_match("/^#/",$subkey) && isset($subfield['#type']) && $this->checkIsEmailField($subfield) ){
+                        $options_email[$subkey] = $subfield['#title'];
+                    }
+                }
+            }
+            elseif( $this->checkIsEmailField($field) ){
+                $options_email[$key] = $field['#title'];
+            }
+        }
 
         $form['requester'] = [
-            '#type' => 'email',
+            '#type' => 'webform_select_other',
             '#title' => $this->t('Requester email address'),
             '#description' => $this->t(''),
             '#default_value' => $this->configuration['requester'],
+            '#options' => $options_email,
             '#required' => true
         ];
 
@@ -72,20 +93,17 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
-        $form['comment'] = [
-            '#type' => 'textarea',
-            '#title' => $this->t('Ticket Body'),
+        $form['type'] = [
+            '#type' => 'select',
+            '#title' => $this->t('Ticket Type'),
             '#description' => $this->t(''),
-            '#default_value' => $this->configuration['comment'],
-            '#required' => true
-        ];
-
-        $form['tags'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Ticket Tags'),
-            '#description' => $this->t(''),
-            '#default_value' => $this->configuration['tags'],
-            '#multiple' => true,
+            '#default_value' => $this->configuration['type'],
+            '#options' => [
+                'question' => 'Question',
+                'incident' => 'Incident',
+                'problem' => 'Problem',
+                'task' => 'Task'
+            ],
             '#required' => false
         ];
 
@@ -95,11 +113,10 @@ class ZendeskHandler extends WebformHandlerBase
             '#description' => $this->t(''),
             '#default_value' => $this->configuration['priority'],
             '#options' => [
-                '',
-                'low',
-                'normal',
-                'high',
-                'urgent'
+                'low' => 'Low',
+                'normal' => 'Normal',
+                'high' => 'High',
+                'urgent' => 'Urgent'
             ],
             '#required' => false
         ];
@@ -110,14 +127,35 @@ class ZendeskHandler extends WebformHandlerBase
             '#description' => $this->t(''),
             '#default_value' => $this->configuration['status'],
             '#options' => [
-                '',
-                'new',
-                'open',
-                'pending',
-                'hold',
-                'solved',
-                'closed'
+                'new' => 'New',
+                'open' => 'Open',
+                'pending' => 'Pending',
+                'hold' => 'Hold',
+                'solved' => 'Solved',
+                'closed' => 'Closed'
             ],
+            '#required' => false
+        ];
+
+        $form['comment'] = [
+            '#type' => 'textarea',
+            '#title' => $this->t('Ticket Body'),
+            '#description' => $this->t(''),
+            '#default_value' => $this->configuration['comment'],
+            '#format' => 'full_html',
+            '#required' => true
+        ];
+
+        // display link for token variables
+        $form['token_link'] = $this->getTokenManager()->buildTreeLink();
+
+        // space separated tags
+        $form['tags'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Ticket Tags'),
+            '#description' => $this->t(''),
+            '#default_value' => $this->configuration['tags'],
+            '#multiple' => true,
             '#required' => false
         ];
 
@@ -130,9 +168,16 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        //$form['token_tree_link'] = $this->tokenManager->buildTreeLink();
+        $form['custom_fields'] = [
+            '#type' => 'webform_codemirror',
+            '#mode' => 'yaml',
+            '#title' => $this->t('Ticket Custom Fields'),
+            '#description' => $this->t(''),
+            '#default_value' => $this->configuration['custom_fields'],
+            '#required' => false
+        ];
 
-        return parent::buildConfigurationForm($form, $form_state); // TODO: Change the autogenerated stub
+        return parent::buildConfigurationForm($form, $form_state);
     }
 
     /**
@@ -180,7 +225,6 @@ class ZendeskHandler extends WebformHandlerBase
             ];
             $this->getLogger()->error('@form webform submission to zendesk failed. @exception: @message', $context);
         }
-
     }
 
     public function submitConfigurationForm(array &$form, FormStateInterface $form_state)
