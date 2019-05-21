@@ -136,7 +136,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['requester'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Requester email address'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('The user who requested this ticket. Select from available email fields, or specify an email address.'),
             '#default_value' => $this->configuration['requester'],
             '#options' => $options_email,
             '#required' => true
@@ -145,7 +145,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['subject'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Subject'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('The value of the subject field for this ticket'),
             '#default_value' => $this->configuration['subject'],
             '#required' => true
         ];
@@ -153,7 +153,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['type'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Type'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('The type of this ticket. Possible values: "problem", "incident", "question" or "task".'),
             '#default_value' => $this->configuration['type'],
             '#options' => [
                 'question' => 'Question',
@@ -167,7 +167,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['priority'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Priority'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('The urgency with which the ticket should be addressed. Possible values: "urgent", "high", "normal", "low".'),
             '#default_value' => $this->configuration['priority'],
             '#options' => [
                 'low' => 'Low',
@@ -181,7 +181,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['status'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Status'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('The state of the ticket. Possible values: "new", "open", "pending", "hold", "solved", "closed".'),
             '#default_value' => $this->configuration['status'],
             '#options' => [
                 'new' => 'New',
@@ -197,7 +197,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['comment'] = [
             '#type' => 'textarea',
             '#title' => $this->t('Ticket Body'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('The initial comment/message of the ticket.'),
             '#default_value' => $this->configuration['comment'],
             '#format' => 'full_html',
             '#required' => true
@@ -207,7 +207,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['tags'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Ticket Tags'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('The list of tags applied to this ticket.'),
             '#default_value' => $this->configuration['tags'],
             '#multiple' => true,
             '#required' => false
@@ -216,7 +216,7 @@ class ZendeskHandler extends WebformHandlerBase
         $form['collaborators'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Ticket CCs'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('Users to add as cc\'s when creating a ticket.'),
             '#default_value' => $this->configuration['collaborators'],
             '#multiple' => true,
             '#required' => false
@@ -226,7 +226,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#type' => 'webform_codemirror',
             '#mode' => 'yaml',
             '#title' => $this->t('Ticket Custom Fields'),
-            '#description' => $this->t(''),
+            '#description' => $this->t('Custom form fields for the ticket'),
             '#default_value' => $this->configuration['custom_fields'],
             '#required' => false
         ];

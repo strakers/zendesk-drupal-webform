@@ -4,6 +4,10 @@
 ### Added
 - Parsing for CC email addresses
 
+### Changed
+- Updated settings form fields with field descriptions
+
+
 ## [0.0.2] - 2019-05-21
 ### Added
 - Formatting and conditional helper functions
