@@ -5,6 +5,7 @@
 - Formatting and conditional helper functions
 - Token manager for placeholder parsing
 - Handler settings summary for display/listing page
+- Link webform submission to Zendesk ticket by ID
 
 ### Changed
 - Redefine default configuration fields

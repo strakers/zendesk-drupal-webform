@@ -300,12 +300,13 @@ class ZendeskHandler extends WebformHandlerBase
             }
 
             // set external_id to connect zendesk ticket with submission ID
-            // $request['external_id'] = '';
+            $request['external_id'] = $webform_submission->id();
 
             // attempt to send request to create zendesk ticket
             try {
                 $client = new ZendeskClient();
                 $ticket = $client->tickets()->create($request);
+                // add ticket ID to submission notes.
             }
             catch( \Exception $e ){
 
