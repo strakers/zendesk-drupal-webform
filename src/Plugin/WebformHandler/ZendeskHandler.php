@@ -32,7 +32,10 @@ use Drupal\Core\Serialization\Yaml;
  *   results = \Drupal\webform\Plugin\WebformHandlerInterface::RESULTS_PROCESSED,
  * )
  *
- * Took inspiration from incomplete Zendesk webform handler port from Drupal 7: https://git.drupalcode.org/sandbox/hanoii-2910895
+ * Took inspiration from the following packages:
+ * - incomplete Zendesk webform handler port from Drupal 7: https://git.drupalcode.org/sandbox/hanoii-2910895
+ * - package synchronizing Drupal forms and Zendesk forms: https://git.drupalcode.org/project/zendesk_tickets
+ *
  */
 class ZendeskHandler extends WebformHandlerBase
 {
