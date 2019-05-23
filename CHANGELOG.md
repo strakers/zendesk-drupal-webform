@@ -3,10 +3,10 @@
 ## [Unreleased]
 ### Added
 - Parsing for CC email addresses
-- Add new Zendesk ticket ID to submission notes
+- Upload webform file attachments to Zendesk ticket
 
 ### Changed
-- Updated settings form fields with field descriptions
+- Updated the settings form fields with field descriptions
 
 
 ## [0.0.2] - 2019-05-21

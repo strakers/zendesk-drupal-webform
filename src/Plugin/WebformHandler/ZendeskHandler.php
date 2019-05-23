@@ -18,6 +18,7 @@ use Drupal\zendesk_webform\Client\ZendeskClient;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\webform\WebformTokenManagerInterface;
 use Drupal\Core\Serialization\Yaml;
+use Drupal\file\Entity\File;
 
 
 /**
@@ -314,9 +315,8 @@ class ZendeskHandler extends WebformHandlerBase
                 ];
             }
 
-            // get custom fields
+            // convert custom fields format from [key:data} to [id:key,value:data] for Zendesk field referencing
             $custom_fields = Yaml::decode($request['custom_fields']);
-            $custom_fields['360017939614'] = 'Webform';
             $request['custom_fields'] = [];
             foreach($custom_fields as $key => $value){
                 $request['custom_fields'][] = [
@@ -328,15 +328,47 @@ class ZendeskHandler extends WebformHandlerBase
             // set external_id to connect zendesk ticket with submission ID
             $request['external_id'] = $webform_submission->id();
 
+            // get list of all webform fields with a file field type
+            $file_fields = $this->getWebformFieldsWithFiles();
+
             // attempt to send request to create zendesk ticket
             try {
+
+                // initiate api client
                 $client = new ZendeskClient();
+
+                // Checks for files in submission values and uploads them if found
+                foreach($fields['data'] as $key => $submission_field){
+                    if( in_array($key, $file_fields) && !empty($submission_field) ){
+
+                        // get file id for upload
+                        $file = File::load($submission_field[0]);
+
+                        // add uploads key to Zendesk comment, if not already present
+                        if( $file && !array_key_exists('uploads', $request['comment']) ){
+                            $request['comment']['uploads'] = [];
+                        }
+
+                        // upload file and get response
+                        $attachment = $client->attachments()->upload([
+                            'file' => $file->getFileUri(),
+                            'type' => $file->getMimeType(),
+                            'name' => $file->getFileName(),
+                        ]);
+
+                        // add upload token to comment
+                        if( $attachment && isset($attachment->upload->token) ){
+                            $request['comment']['uploads'][] = $attachment->upload->token;
+                        }
+                    }
+                }
+
+                // create ticket
                 $new_ticket = $client->tickets()->create($request);
 
                 // add ticket ID to submission notes.
-                if( $new_ticket ) {
-                    $webform_submission->setElementData('notes', 'Ticket: ' . $new_ticket->ticket->id . PHP_EOL );
-                }
+                // https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-programmatically-create-and-update-a-submission
+                // TODO:
             }
             catch( \Exception $e ){
 
@@ -417,5 +449,12 @@ class ZendeskHandler extends WebformHandlerBase
      */
     protected function cleanTags( $text = '' ){
         return implode(' ',preg_split("/[^a-z0-9_]+/i",strtolower($text)));
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWebformFieldsWithFiles(){
+        return $this->getWebform()->getElementsManagedFiles();
     }
 }
