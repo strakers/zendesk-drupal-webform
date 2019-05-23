@@ -23,3 +23,24 @@ Finally, use composer to require this package:
 ```bash
 composer require strakez/zendesk-webform
 ```
+
+## Setup
+
+### 1) Get Zendesk API Key
+
+Please see the following link for instructions on [retrieving your Zendesk API Key](https://support.zendesk.com/hc/en-us/articles/226022787-Generating-a-new-API-token-).
+
+### 2) Activate Module
+
+- Activate the Zendesk Webform module from your site's Extend page.
+- Navigate to the configuration page, and fill out the required fields. (Note: your API key will be used here.)
+
+### 3) Add Handler
+
+- Navigate to the desired webform's [Settings > Email/Handlers] page, and click Add Handler.
+- Specify settings for the Zendesk ticket to be created
+
+### 4) Test
+
+It is recommend to submit a test submission to confirm your settings. If the ticket is created in Zendesk as desired, 
+congrats!
