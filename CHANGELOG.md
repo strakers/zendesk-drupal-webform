@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.0.3] - 2019-05-22
 ### Added
 - Parsing for CC email addresses
 - Upload webform file attachments to Zendesk ticket
