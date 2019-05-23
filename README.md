@@ -1,2 +1,3 @@
-# zendesk-drupal-webform
-Adds the ability to create Zendesk tickets from Drupal Webforms
+# strakez/zendesk-webform
+Add a webform handler to create Zendesk tickets from Drupal webform submissions.
+

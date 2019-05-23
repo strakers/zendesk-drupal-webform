@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+###Changed
+- Make project description more accurate
 
 ## [0.0.3] - 2019-05-22
 ### Added
@@ -27,4 +29,5 @@
 - This CHANGELOG file to document changes in the codebase.
 - This initial code base
 
+[0.0.2]: 
 [0.0.1]: https://github.com/strakers/zendesk-drupal-webform/releases/tag/v0.0.1
