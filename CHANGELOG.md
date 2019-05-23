@@ -3,6 +3,7 @@
 ## [Unreleased]
 ###Changed
 - Make project description more accurate
+- Update README file with documentation
 
 ## [0.0.3] - 2019-05-22
 ### Added
