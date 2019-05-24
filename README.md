@@ -43,4 +43,4 @@ Please see the following link for instructions on [retrieving your Zendesk API K
 ### 4) Test
 
 It is recommend to submit a test submission to confirm your settings. If the ticket is created in Zendesk as desired, 
-congrats!
+congrats! You've successfully setup up the handler integration.
