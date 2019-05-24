@@ -251,8 +251,8 @@ class ZendeskHandler extends WebformHandlerBase
         // if found assignees from Zendesk, populate dropdown.
         // otherwise provide field to specify assignee ID
         $form['assignee'] = [
-            '#title' => $this->t('Assignee ID'),
-            '#description' => $this->t('The id is the assignee'),
+            '#title' => $this->t('Ticket Assignee'),
+            '#description' => $this->t('The id is the intended assignee'),
             '#default_value' => $this->configuration['assignee'],
             '#required' => false
         ];
