@@ -93,6 +93,7 @@ class ZendeskHandler extends WebformHandlerBase
             'tags' => 'drupal webform',
             'priority' => 'normal',
             'status' => 'new',
+            'assignee' => '',
             'type' => 'question',
             'collaborators' => '',
             'custom_fields' => '',
@@ -132,6 +133,38 @@ class ZendeskHandler extends WebformHandlerBase
             }
         }
 
+
+        $assignees = [];
+
+        // get available assignees from zendesk
+        try {
+            // initiate api client
+            $client = new ZendeskClient();
+
+            // get list of all users who are either agents or admins
+            $response = $client->users()->findAll([
+                'role' => [
+                    'agent','admin'
+                ]
+            ]);
+
+            // store found agents
+            $assignees = $response->users;
+        }
+        catch( \Exception $e ){
+
+            // Encode HTML entities to prevent broken markup from breaking the page.
+            $message = nl2br(htmlentities($e->getMessage()));
+
+            // Log error message.
+            $this->getLogger()->error('Retrieval of assignees for @form webform Zendesk handler failed. @exception: @message. Click to edit @link.', [
+                '@exception' => get_class($e),
+                '@form' => $this->getWebform()->label(),
+                '@message' => $message,
+                'link' => $this->getWebform()->toLink($this->t('Edit'), 'handlers')->toString(),
+            ]);
+        }
+
         // build form fields
 
         $form['requester'] = [
@@ -151,6 +184,15 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
+        $form['comment'] = [
+            '#type' => 'textarea',
+            '#title' => $this->t('Ticket Body'),
+            '#description' => $this->t('The initial comment/message of the ticket.'),
+            '#default_value' => $this->configuration['comment'],
+            '#format' => 'full_html',
+            '#required' => true
+        ];
+
         $form['type'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Type'),
@@ -162,6 +204,16 @@ class ZendeskHandler extends WebformHandlerBase
                 'problem' => 'Problem',
                 'task' => 'Task'
             ],
+            '#required' => false
+        ];
+
+        // space separated tags
+        $form['tags'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Ticket Tags'),
+            '#description' => $this->t('The list of tags applied to this ticket.'),
+            '#default_value' => $this->configuration['tags'],
+            '#multiple' => true,
             '#required' => false
         ];
 
@@ -195,24 +247,27 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        $form['comment'] = [
-            '#type' => 'textarea',
-            '#title' => $this->t('Ticket Body'),
-            '#description' => $this->t('The initial comment/message of the ticket.'),
-            '#default_value' => $this->configuration['comment'],
-            '#format' => 'full_html',
-            '#required' => true
-        ];
-
-        // space separated tags
-        $form['tags'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Ticket Tags'),
-            '#description' => $this->t('The list of tags applied to this ticket.'),
-            '#default_value' => $this->configuration['tags'],
-            '#multiple' => true,
+        // prep assignees field
+        // if found assignees from Zendesk, populate dropdown.
+        // otherwise provide field to specify assignee ID
+        $form['assignee'] = [
+            '#title' => $this->t('Assignee ID'),
+            '#description' => $this->t('The id is the assignee'),
+            '#default_value' => $this->configuration['assignee'],
             '#required' => false
         ];
+
+        if(! empty($assignees) ){
+            $form['assignee']['#type'] = 'webform_select_other';
+            $form['assignee']['#options'] = $assignees;
+            $form['assignee']['#options'] = $this->t('The email address the assignee');
+        }
+        else {
+            $form['assignee']['#type'] = 'textfield';
+            $form['assignee']['#attribute'] = [
+                'type' => 'number'
+            ];
+        }
 
         $form['collaborators'] = [
             '#type' => 'textfield',
