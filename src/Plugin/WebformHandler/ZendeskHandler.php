@@ -142,14 +142,17 @@ class ZendeskHandler extends WebformHandlerBase
             $client = new ZendeskClient();
 
             // get list of all users who are either agents or admins
-            $response = $client->users()->findAll([
-                'role' => [
-                    'agent','admin'
-                ]
-            ]);
+            $response_agents = $client->users()->findAll([ 'role' => 'agent' ]);
+            $response_admins = $client->users()->findAll([ 'role' => 'admin' ]);
+            $users = array_merge( $response_agents->users, $response_admins->users );
 
             // store found agents
-            $assignees = $response->users;
+            foreach($users as $user){
+                $assignees[ $user->id ] = $user->name;
+            }
+
+            // order agents by name
+            asort($assignees);
         }
         catch( \Exception $e ){
 
@@ -252,15 +255,14 @@ class ZendeskHandler extends WebformHandlerBase
         // otherwise provide field to specify assignee ID
         $form['assignee'] = [
             '#title' => $this->t('Ticket Assignee'),
-            '#description' => $this->t('The id is the intended assignee'),
+            '#description' => $this->t('The id of the intended assignee'),
             '#default_value' => $this->configuration['assignee'],
             '#required' => false
         ];
-
         if(! empty($assignees) ){
             $form['assignee']['#type'] = 'webform_select_other';
-            $form['assignee']['#options'] = $assignees;
-            $form['assignee']['#options'] = $this->t('The email address the assignee');
+            $form['assignee']['#options'] = ['' => '-- none --'] + $assignees;
+            $form['assignee']['#description'] = $this->t('The email address the assignee');
         }
         else {
             $form['assignee']['#type'] = 'textfield';
