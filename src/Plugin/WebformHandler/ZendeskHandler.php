@@ -349,14 +349,14 @@ class ZendeskHandler extends WebformHandlerBase
 
             // declare working variables
             $request = [];
-            $fields = $webform_submission->toArray(TRUE);
+            $submission_fields = $webform_submission->toArray(TRUE);
             $configuration = $this->getTokenManager()->replace($this->configuration, $webform_submission);
 
             // Allow for either values coming from other fields or static/tokens
             foreach ($this->defaultConfigurationNames() as $field) {
                 $request[$field] = $configuration[$field];
-                if (!empty($fields['data'][$configuration[$field]])) {
-                    $request[$field] = $fields['data'][$configuration[$field]];
+                if (!empty($submission_fields['data'][$configuration[$field]])) {
+                    $request[$field] = $submission_fields['data'][$configuration[$field]];
                 }
             }
 
@@ -382,6 +382,10 @@ class ZendeskHandler extends WebformHandlerBase
                 ];
             }
 
+            // clean up tags
+            $request['tags'] = $this->convertTags( $request['tags'] );
+            $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
+
             // set external_id to connect zendesk ticket with submission ID
             $request['external_id'] = $webform_submission->id();
 
@@ -395,10 +399,10 @@ class ZendeskHandler extends WebformHandlerBase
                 $client = new ZendeskClient();
 
                 // Checks for files in submission values and uploads them if found
-                foreach($fields['data'] as $key => $submission_field){
+                foreach($submission_fields['data'] as $key => $submission_field){
                     if( in_array($key, $file_fields) && !empty($submission_field) ){
 
-                        // get file id for upload
+                        // get file from id for upload
                         $file = File::load($submission_field[0]);
 
                         // add uploads key to Zendesk comment, if not already present
@@ -513,5 +517,13 @@ class ZendeskHandler extends WebformHandlerBase
      */
     protected function getWebformFieldsWithFiles(){
         return $this->getWebform()->getElementsManagedFiles();
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    protected function convertTags( $text = '' ){
+        return strtolower(implode(' ',preg_split("/[^a-z0-9_]+/i",$text)));
     }
 }
