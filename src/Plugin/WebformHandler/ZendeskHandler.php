@@ -280,6 +280,9 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
+        // get subdomain for use in link below
+        $zendesk_subdomain = \Drupal::config('zendesk_webform.adminsettings')->get('subdomain');
+
         $form['custom_fields'] = [
             '#type' => 'webform_codemirror',
             '#mode' => 'yaml',
