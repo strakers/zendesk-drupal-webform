@@ -1,5 +1,5 @@
 name: Zendesk Webform
-description: Adds the ability to create Zendesk tickets from Drupal Webforms
+description: Add a webform handler to create Zendesk tickets from Drupal webform submissions
 package: Zendesk
 
 type: module

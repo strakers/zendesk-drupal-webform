@@ -1,6 +1,16 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Optionally set an assignee for the Webform Handler
+
+### Changed
+- Make project description more accurate
+- Update README file with documentation
+
+### Fixed
+- Webform submissions no longer create multiple tickets
+
 
 ## [0.0.3] - 2019-05-22
 ### Added
@@ -22,9 +32,13 @@
 - Redefine default configuration fields
 - Moved Zendesk new ticket call to be triggered on SaveForm call for new form submissions only
 
+
 ## [0.0.1] - 2019-05-19
 ### Added
 - This CHANGELOG file to document changes in the codebase.
 - This initial code base
 
+
+[0.0.3]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.0.2...v0.0.3
+[0.0.2]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/strakers/zendesk-drupal-webform/releases/tag/v0.0.1

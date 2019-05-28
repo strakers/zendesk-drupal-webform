@@ -1,6 +1,6 @@
 {
     "name": "strakez/zendesk_webform",
-    "description": "Adds the ability to create Zendesk tickets from Drupal Webforms",
+    "description": "Add a webform handler to create Zendesk tickets from Drupal webform submissions",
     "type": "drupal-custom-module",
     "keywords": ["Drupal", "Zendesk", "Webform"],
     "require": {
