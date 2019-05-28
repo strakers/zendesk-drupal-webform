@@ -384,10 +384,6 @@ class ZendeskHandler extends WebformHandlerBase
                 }
             }
 
-            // clean up tags
-            $request['tags'] = $this->convertTags( $request['tags'] );
-            $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
-
             // set external_id to connect zendesk ticket with submission ID
             $request['external_id'] = $webform_submission->id();
 
