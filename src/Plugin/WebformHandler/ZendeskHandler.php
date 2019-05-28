@@ -373,13 +373,15 @@ class ZendeskHandler extends WebformHandlerBase
             }
 
             // convert custom fields format from [key:data} to [id:key,value:data] for Zendesk field referencing
-            $custom_fields = Yaml::decode($request['custom_fields']);
             $request['custom_fields'] = [];
-            foreach($custom_fields as $key => $value){
-                $request['custom_fields'][] = [
-                    'id' => $key,
-                    'value' => $value
-                ];
+            $custom_fields = Yaml::decode($request['custom_fields']);
+            if($custom_fields) {
+                foreach ($custom_fields as $key => $value) {
+                    $request['custom_fields'][] = [
+                        'id' => $key,
+                        'value' => $value
+                    ];
+                }
             }
 
             // clean up tags
