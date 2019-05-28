@@ -260,13 +260,13 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
         if(! empty($assignees) ){
-            $form['assignee']['#type'] = 'webform_select_other';
-            $form['assignee']['#options'] = ['' => '-- none --'] + $assignees;
-            $form['assignee']['#description'] = $this->t('The email address the assignee');
+            $form['assignee_id']['#type'] = 'webform_select_other';
+            $form['assignee_id']['#options'] = ['' => '-- none --'] + $assignees;
+            $form['assignee_id']['#description'] = $this->t('The email address the assignee');
         }
         else {
-            $form['assignee']['#type'] = 'textfield';
-            $form['assignee']['#attribute'] = [
+            $form['assignee_id']['#type'] = 'textfield';
+            $form['assignee_id']['#attribute'] = [
                 'type' => 'number'
             ];
         }
