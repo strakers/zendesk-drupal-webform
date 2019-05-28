@@ -93,7 +93,7 @@ class ZendeskHandler extends WebformHandlerBase
             'tags' => 'drupal webform',
             'priority' => 'normal',
             'status' => 'new',
-            'assignee' => '',
+            'assignee_id' => '',
             'type' => 'question',
             'collaborators' => '',
             'custom_fields' => '',
@@ -253,10 +253,10 @@ class ZendeskHandler extends WebformHandlerBase
         // prep assignees field
         // if found assignees from Zendesk, populate dropdown.
         // otherwise provide field to specify assignee ID
-        $form['assignee'] = [
+        $form['assignee_id'] = [
             '#title' => $this->t('Ticket Assignee'),
             '#description' => $this->t('The id of the intended assignee'),
-            '#default_value' => $this->configuration['assignee'],
+            '#default_value' => $this->configuration['assignee_id'],
             '#required' => false
         ];
         if(! empty($assignees) ){
