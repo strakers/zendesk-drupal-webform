@@ -294,6 +294,9 @@ class ZendeskHandler extends WebformHandlerBase
             '#default_value' => $this->configuration['custom_fields'],
             '#description_display' => 'before',
             '#weight' => 90,
+            '#attributes' => [
+                'placeholder' => '146455678: "[webform_submission:value:email]"'
+            ],
             '#required' => false
         ];
 
