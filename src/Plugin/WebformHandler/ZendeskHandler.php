@@ -284,8 +284,13 @@ class ZendeskHandler extends WebformHandlerBase
             '#type' => 'webform_codemirror',
             '#mode' => 'yaml',
             '#title' => $this->t('Ticket Custom Fields'),
-            '#description' => $this->t('Custom form fields for the ticket'),
+            '#help' => $this->t('Custom form fields for the ticket'),
+            '#description' => $this->t(
+                '<div id="help">To set the value of one or more custom fields in the new Zendesk ticket, in <a href="https://learn.getgrav.org/16/advanced/yaml#mappings" target="_blank">YAML format</a>, specify a list of pairs consisting of IDs and values. You may find the custom field ID when viewing the list of <a href="https://'.$zendesk_subdomain.'.zendesk.com/agent/admin/ticket_fields" target="_blank">Ticket Fields</a> in Zendesk. Values may be plain text, or Drupal webform tokens/placeholders. <p class="">Eg. <code class="CodeMirror"><span>12345678</span>: <span>"foobar"</span></code></p> </div>'
+            ),
             '#default_value' => $this->configuration['custom_fields'],
+            '#description_display' => 'before',
+            '#weight' => 90,
             '#required' => false
         ];
 
