@@ -1,6 +1,16 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- New helper function for formatting names from name field
+
+### Changed
+- Split Requester field into separate fields for name and email fields
+- Allow for setting name value from possible name fields
+- Updated comments with more descriptions
+
+### Fixed
+- Changed YAML placeholder values to use single quotations
 
 
 ## [0.1.0] - 2019-05-28
