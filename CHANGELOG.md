@@ -9,7 +9,7 @@
 - Allow for setting name value from possible name fields
 - Updated comments with more descriptions
 - Update custom field description and text
-Retrieve subdomain setting for use in link
+- Retrieve subdomain setting for use in link
 - Add placeholder value to custom fields field
 
 ### Fixed
