@@ -1,6 +1,21 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- New helper function for formatting names from name field
+
+### Changed
+- Split Requester field into separate fields for name and email fields
+- Allow for setting name value from possible name fields
+- Updated comments with more descriptions
+- Update custom field description and text
+- Retrieve subdomain setting for use in link
+- Add placeholder value to custom fields field
+
+### Fixed
+- Changed YAML placeholder values to use single quotations
+- Only display custom fields when present
+- Remove second occurence of "clean up tags" block
 
 
 ## [0.1.0] - 2019-05-28
