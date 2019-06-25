@@ -82,12 +82,14 @@ class ZendeskHandler extends WebformHandlerBase
     }
 
     /**
+     * Provides list of setting fields
      * {@inheritdoc}
      */
     public function defaultConfiguration()
     {
         return [
-            'requester' => '',
+            'requester_name' => '',
+            'requester_email' => '',
             'subject' => '',
             'comment' => '[webform_submission:values]', // by default lists all submission values as body
             'tags' => 'drupal webform',
@@ -111,28 +113,42 @@ class ZendeskHandler extends WebformHandlerBase
     }
 
     /**
+     * Provide settings fields for configuration
      * {@inheritdoc}
      */
     public function buildConfigurationForm(array $form, FormStateInterface $form_state)
     {
 
         $webform_fields = $this->getWebform()->getElementsDecoded();
-        $options_email = [''];
+        $zendesk_subdomain = \Drupal::config('zendesk_webform.adminsettings')->get('subdomain');
+        $options = [
+            'email' => [''],
+            'name' => [''],
+        ];
 
         // get available email fields to use as requester email address
         foreach($webform_fields as $key => $field){
             if( $this->checkIsGroupingField($field) ){
                 foreach($field as $subkey => $subfield){
-                    if(!preg_match("/^#/",$subkey) && isset($subfield['#type']) && $this->checkIsEmailField($subfield) ){
-                        $options_email[$subkey] = $subfield['#title'];
+                    if(!preg_match("/^#/",$subkey) && isset($subfield['#type'])) {
+                        if ($this->checkIsEmailField($subfield)) {
+                            $options['email'][$subkey] = $subfield['#title'];
+                        }
+                        elseif ($this->checkIsNameField($subfield)) {
+                            $options['name'][$subkey] = $subfield['#title'];
+                        }
                     }
                 }
             }
-            elseif( $this->checkIsEmailField($field) ){
-                $options_email[$key] = $field['#title'];
+            else{
+                if( $this->checkIsEmailField($field) ){
+                    $options['email'][$key] = $field['#title'];
+                }
+                elseif( $this->checkIsNameField($field) ){
+                    $options['name'][$key] = $field['#title'];
+                }
             }
         }
-
 
         $assignees = [];
 
@@ -170,12 +186,21 @@ class ZendeskHandler extends WebformHandlerBase
 
         // build form fields
 
-        $form['requester'] = [
+        $form['requester_name'] = [
+            '#type' => 'webform_select_other',
+            '#title' => $this->t('Requester name'),
+            '#description' => $this->t('The name of the user who requested this ticket. Select from available name fields, or specify a name.'),
+            '#default_value' => $this->configuration['requester_name'],
+            '#options' => $options['name'],
+            '#required' => false
+        ];
+
+        $form['requester_email'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Requester email address'),
-            '#description' => $this->t('The user who requested this ticket. Select from available email fields, or specify an email address.'),
-            '#default_value' => $this->configuration['requester'],
-            '#options' => $options_email,
+            '#description' => $this->t('The email address of user who requested this ticket. Select from available email fields, or specify an email address.'),
+            '#default_value' => $this->configuration['requester_email'],
+            '#options' => $options['email'],
             '#required' => true
         ];
 
@@ -280,22 +305,19 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        // get subdomain for use in link below
-        $zendesk_subdomain = \Drupal::config('zendesk_webform.adminsettings')->get('subdomain');
-
         $form['custom_fields'] = [
             '#type' => 'webform_codemirror',
             '#mode' => 'yaml',
             '#title' => $this->t('Ticket Custom Fields'),
             '#help' => $this->t('Custom form fields for the ticket'),
             '#description' => $this->t(
-                '<div id="help">To set the value of one or more custom fields in the new Zendesk ticket, in <a href="https://learn.getgrav.org/16/advanced/yaml#mappings" target="_blank">YAML format</a>, specify a list of pairs consisting of IDs and values. You may find the custom field ID when viewing the list of <a href="https://'.$zendesk_subdomain.'.zendesk.com/agent/admin/ticket_fields" target="_blank">Ticket Fields</a> in Zendesk. Values may be plain text, or Drupal webform tokens/placeholders. <p class="">Eg. <code class="CodeMirror"><span>12345678</span>: <span>"foobar"</span></code></p> </div>'
+                '<div id="help">To set the value of one or more custom fields in the new Zendesk ticket, in <a href="https://learn.getgrav.org/16/advanced/yaml#mappings" target="_blank">YAML format</a>, specify a list of pairs consisting of IDs and values. You may find the custom field ID when viewing the list of <a href="https://'.$zendesk_subdomain.'.zendesk.com/agent/admin/ticket_fields" target="_blank">Ticket Fields</a> in Zendesk. Values may be plain text, or Drupal webform tokens/placeholders. <p class="">Eg. <code class="CodeMirror"><span>12345678</span>: <span>\'foobar\'</span></code></p> </div>'
             ),
             '#default_value' => $this->configuration['custom_fields'],
             '#description_display' => 'before',
             '#weight' => 90,
             '#attributes' => [
-                'placeholder' => '146455678: "[webform_submission:value:email]"'
+                'placeholder' => '146455678: \'[webform_submission:value:email]\''
             ],
             '#required' => false
         ];
@@ -336,6 +358,7 @@ class ZendeskHandler extends WebformHandlerBase
     }
 
     /**
+     * Saves handler settings to config
      * {@inheritdoc}
      */
     public function submitConfigurationForm(array &$form, FormStateInterface $form_state)
@@ -351,6 +374,7 @@ class ZendeskHandler extends WebformHandlerBase
     }
 
     /**
+     * Submits a Zendesk ticket once the Webform has been submitted and saved
      * {@inheritdoc}
      */
     public function postSave(WebformSubmissionInterface $webform_submission, $update = TRUE)
@@ -375,6 +399,19 @@ class ZendeskHandler extends WebformHandlerBase
             $request['tags'] = $this->cleanTags( $request['tags'] );
             $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
 
+            // restructure requester
+            if(!isset($request['requester'])){
+                $request['requester'] = $request['requester_name']
+                    ? [
+                        'name' => $this->convertName($request['requester_name']),
+                        'email' => $request['requester_email'],
+                    ]
+                    : $request['requester_email'];
+
+                unset($request['requester_name']);
+                unset($request['requester_email']);
+            }
+
             // restructure comment array
             if(!isset($request['comment']['body'])){
                 $comment = $request['comment'];
@@ -384,8 +421,9 @@ class ZendeskHandler extends WebformHandlerBase
             }
 
             // convert custom fields format from [key:data} to [id:key,value:data] for Zendesk field referencing
-            $request['custom_fields'] = [];
             $custom_fields = Yaml::decode($request['custom_fields']);
+            unset($request['custom_fields']);
+            $request['custom_fields'] = [];
             if($custom_fields) {
                 foreach ($custom_fields as $key => $value) {
                     $request['custom_fields'][] = [
@@ -458,6 +496,7 @@ class ZendeskHandler extends WebformHandlerBase
     }
 
     /**
+     * Displays a list of configured values on the Handlers page
      * {@inheritdoc}
      */
     public function getSummary()
@@ -501,6 +540,14 @@ class ZendeskHandler extends WebformHandlerBase
      * @param array $field
      * @return bool
      */
+    protected function checkIsNameField( array $field ){
+        return in_array( $field['#type'], [ 'webform_name', 'textfield' ] );
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     */
     protected function checkIsEmailField( array $field ){
         return in_array( $field['#type'], [ 'email', 'webform_email_confirm' ] );
     }
@@ -534,5 +581,22 @@ class ZendeskHandler extends WebformHandlerBase
      */
     protected function convertTags( $text = '' ){
         return strtolower(implode(' ',preg_split("/[^a-z0-9_]+/i",$text)));
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    protected function convertName( $name_parts ){
+        $name = (object) $name_parts;
+        $map = [
+            $name->title,
+            $name->first,
+            $name->middle,
+            $name->last,
+            $name->suffix,
+            $name->degree
+        ];
+        return implode(' ',array_filter($map,'trim'));
     }
 }
