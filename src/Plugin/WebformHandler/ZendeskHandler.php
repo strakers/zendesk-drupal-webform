@@ -477,6 +477,17 @@ class ZendeskHandler extends WebformHandlerBase
                 // add ticket ID to submission notes.
                 // https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-programmatically-create-and-update-a-submission
                 // TODO:
+
+                //
+                $zendesk_ticket_id_field_name = 'zendesk_ticket_id';
+                
+                $data = $webform_submission->getData();
+                if(array_key_exists( $zendesk_ticket_id_field_name, $data ) && $new_ticket){
+                    $data[$zendesk_ticket_id_field_name] = $new_ticket->ticket->id;
+                    $webform_submission->setData($data);
+                    $webform_submission->save();
+                }
+
             }
             catch( \Exception $e ){
 
