@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Configuration menu link now appears in admin menu
+
 ## [0.2.0] - 2019-06-25
 ### Added
 - New helper function for formatting names from name field
