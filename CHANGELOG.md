@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+
+
+## [0.2.1] - 2019-06-27
 ### Added
 - Update Drupal webform submission with Zendesk Ticket ID, if field is present on form
 - Allow for specifying any hidden field on the form as the Zendesk Ticket ID Field to be updated
@@ -10,6 +13,7 @@
 
 ### Fixed
 - Configuration menu link now appears in admin menu
+
 
 ## [0.2.0] - 2019-06-25
 ### Added
@@ -68,7 +72,8 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.0.3...v0.1.0
 [0.0.3]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.0.2...v0.0.3
