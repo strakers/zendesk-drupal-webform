@@ -44,3 +44,9 @@ Please see the following link for instructions on [retrieving your Zendesk API K
 
 It is recommend to submit a test submission to confirm your settings. If the ticket is created in Zendesk as desired, 
 congrats! You've successfully setup up the handler integration.
+
+## Additional Notes
+
+### Store Zendesk Ticket ID
+
+This module can help to keep track of the Zendesk Ticket ID directly on each submission. You'll need to create a hidden field when building the form, and then set it as the Zendesk Ticket ID Field in the handler configuration form.
