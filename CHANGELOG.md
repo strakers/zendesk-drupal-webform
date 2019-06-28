@@ -1,6 +1,12 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Update Drupal webform submission with Zendesk Ticket ID, if field is present on form
+- Allow for specifying any hidden field on the form as the Zendesk Ticket ID Field to be updated
+
+### Changed
+- Updated the README file with instructions for configuring storage of the submission's Zendesk Ticket ID.
 
 ## [0.2.0] - 2019-06-25
 ### Added
