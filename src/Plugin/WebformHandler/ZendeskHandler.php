@@ -99,6 +99,7 @@ class ZendeskHandler extends WebformHandlerBase
             'type' => 'question',
             'collaborators' => '',
             'custom_fields' => '',
+            'ticket_id_field' => '',
 
             // todo: look into attachments handling
         ];
@@ -124,6 +125,7 @@ class ZendeskHandler extends WebformHandlerBase
         $options = [
             'email' => [''],
             'name' => [''],
+            'hidden' => [''],
         ];
 
         // get available email fields to use as requester email address
@@ -137,6 +139,9 @@ class ZendeskHandler extends WebformHandlerBase
                         elseif ($this->checkIsNameField($subfield)) {
                             $options['name'][$subkey] = $subfield['#title'];
                         }
+                        elseif ($this->checkIsHiddenField($subfield)) {
+                            $options['hidden'][$subkey] = $subfield['#title'];
+                        }
                     }
                 }
             }
@@ -146,6 +151,9 @@ class ZendeskHandler extends WebformHandlerBase
                 }
                 elseif( $this->checkIsNameField($field) ){
                     $options['name'][$key] = $field['#title'];
+                }
+                elseif( $this->checkIsHiddenField($field) ){
+                    $options['hidden'][$key] = $field['#title'];
                 }
             }
         }
@@ -325,6 +333,15 @@ class ZendeskHandler extends WebformHandlerBase
         // display link for token variables
         $form['token_link'] = $this->getTokenManager()->buildTreeLink();
 
+        $form['ticket_id_field'] = [
+            '#type' => 'webform_select_other',
+            '#title' => $this->t('Zendesk Ticket ID Field'),
+            '#description' => $this->t('The name of hidden field which will be updated with the created Ticket ID.'),
+            '#default_value' => $this->configuration['ticket_id_field'],
+            '#options' => $options['hidden'],
+            '#required' => false
+        ];
+
         return parent::buildConfigurationForm($form, $form_state);
     }
 
@@ -474,9 +491,19 @@ class ZendeskHandler extends WebformHandlerBase
                 // create ticket
                 $new_ticket = $client->tickets()->create($request);
 
-                // add ticket ID to submission notes.
-                // https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-programmatically-create-and-update-a-submission
-                // TODO:
+                // retrieve the name of the field in which to store the created Zendesk Ticket ID
+                $zendesk_ticket_id_field_name = $configuration['ticket_id_field'];
+                
+                // retrieve submission data
+                $data = $webform_submission->getData();
+
+                // if name field is set and present,  add ticket ID to hidden Zendesk Ticket ID field
+                if($zendesk_ticket_id_field_name && array_key_exists( $zendesk_ticket_id_field_name, $data ) && $new_ticket){
+                    $data[$zendesk_ticket_id_field_name] = $new_ticket->ticket->id;
+                    $webform_submission->setData($data);
+                    $webform_submission->save();
+                }
+
             }
             catch( \Exception $e ){
 
@@ -550,6 +577,14 @@ class ZendeskHandler extends WebformHandlerBase
      */
     protected function checkIsEmailField( array $field ){
         return in_array( $field['#type'], [ 'email', 'webform_email_confirm' ] );
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     */
+    protected function checkIsHiddenField( array $field ){
+        return $field['#type'] === 'hidden' ;
     }
 
     /**
