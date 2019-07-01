@@ -29,8 +29,8 @@ Please see the following link for instructions on [retrieving your Zendesk API K
 
 ### 3) Add Handler
 
-- Navigate to the desired webform's [Settings > Email/Handlers] page, and click Add Handler.
-- Specify settings for the Zendesk ticket to be created
+- Navigate to the desired webform's ***Settings -> Email/Handlers*** page, and click **Add Handler**.
+- Specify settings for the Zendesk ticket to be created.
 
 ### 4) Test
 
