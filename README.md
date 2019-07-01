@@ -29,7 +29,6 @@ Please see the following link for instructions on [retrieving your Zendesk API K
 ### 4) Configure the Zendesk Connection Settings
 - Navigate to the configuration page (found under ***Configuration -> System -> Zendesk Integration Form***), and fill out the required fields. (Note: your API key will be used here.)
 
-
 ### 3) Add a Zendesk Handler to a Webform
 
 - Navigate to the desired webform's ***Settings -> Email/Handlers*** page, and click **Add Handler**.
