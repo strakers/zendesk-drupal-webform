@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.3.0] - 2019-07-02
 ### Changed
 - Updated install instructions after registering with Packagist
 
