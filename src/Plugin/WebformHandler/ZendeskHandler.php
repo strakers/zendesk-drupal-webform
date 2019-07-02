@@ -646,4 +646,20 @@ class ZendeskHandler extends WebformHandlerBase
         ];
         return implode(' ',array_filter($map,'trim'));
     }
+
+    /**
+     * @param array $text
+     * @return string
+     */
+    protected function convertTable( $set ){
+        $html = '';
+        if( $set ) {
+            $html = '<table><thead><tr><th>Title</th><th>ID</th></tr></thead><tbody>';
+            foreach ($set as $id => $val) {
+                $html .= '<tr><td>' . $val . '</td><td>' . $id . '</td></tr>';
+            }
+            $html .= '</tbody></table>';
+        }
+        return $html;
+    }
 }
