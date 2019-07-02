@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\webform\WebformTokenManagerInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\file\Entity\File;
+use Drupal\zendesk_webform\Utils\Utility;
 
 
 /**
@@ -588,48 +589,6 @@ class ZendeskHandler extends WebformHandlerBase
         return $this->token_manager;
     }
 
-    // formatting and condition helper functions
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsNameField( array $field ){
-        return in_array( $field['#type'], [ 'webform_name', 'textfield' ] );
-    }
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsEmailField( array $field ){
-        return in_array( $field['#type'], [ 'email', 'webform_email_confirm' ] );
-    }
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsHiddenField( array $field ){
-        return $field['#type'] === 'hidden' ;
-    }
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsGroupingField( array $field ){
-        return in_array( $field['#type'], [ 'webform_section' ] );
-    }
-
-    /**
-     * @param string $text
-     * @return string
-     */
-    protected function cleanTags( $text = '' ){
-        return implode(' ',preg_split("/[^a-z0-9_]+/i",strtolower($text)));
-    }
-
     /**
      * @return array
      */
@@ -637,44 +596,77 @@ class ZendeskHandler extends WebformHandlerBase
         return $this->getWebform()->getElementsManagedFiles();
     }
 
+    // Deprecated functions
+
     /**
-     * @param string $text
-     * @return string
+     * @param array $field
+     * @return bool
+     * @deprecated 
      */
-    protected function convertTags( $text = '' ){
-        return strtolower(implode(' ',preg_split("/[^a-z0-9_]+/i",$text)));
+    protected function checkIsNameField( array $field ){
+        return Utility::checkIsNameField($field);
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     * @deprecated
+     */
+    protected function checkIsEmailField( array $field ){
+        return Utility::checkIsEmailField($field);
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     * @deprecated
+     */
+    protected function checkIsHiddenField( array $field ){
+        return Utility::checkIsHiddenField($field);
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     * @deprecated
+     */
+    protected function checkIsGroupingField( array $field ){
+        return Utility::checkIsGroupingField($field);
     }
 
     /**
      * @param string $text
      * @return string
+     * @deprecated
+     */
+    protected function cleanTags( $text = '' ){
+        return Utility::cleanTags($text);
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     * @deprecated
+     */
+    protected function convertTags( $text = '' ){
+        return Utility::convertTags($text);
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     * @deprecated
      */
     protected function convertName( $name_parts ){
-        $name = (object) $name_parts;
-        $map = [
-            $name->title,
-            $name->first,
-            $name->middle,
-            $name->last,
-            $name->suffix,
-            $name->degree
-        ];
-        return implode(' ',array_filter($map,'trim'));
+        return Utility::convertName($name_parts);
     }
 
     /**
      * @param array $text
      * @return string
+     * @deprecated
      */
     protected function convertTable( $set ){
-        $html = '';
-        if( $set ) {
-            $html = '<table><thead><tr><th>Title</th><th>ID</th></tr></thead><tbody>';
-            foreach ($set as $id => $val) {
-                $html .= '<tr><td>' . $val . '</td><td>' . $id . '</td></tr>';
-            }
-            $html .= '</tbody></table>';
-        }
-        return $html;
+        return Utility::convertTable($set);
     }
 }
