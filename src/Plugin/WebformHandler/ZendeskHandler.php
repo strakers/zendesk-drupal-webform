@@ -128,6 +128,15 @@ class ZendeskHandler extends WebformHandlerBase
             'hidden' => [''],
         ];
         $form_ticket_fields = [];
+        $form_field_exclusions = [
+            'Subject',
+            'Description',
+            'Status',
+            'Type',
+            'Priority',
+            'Group',
+            'Assignee',
+        ];
 
         // get available email fields to use as requester email address
         foreach($webform_fields as $key => $field){
@@ -183,7 +192,9 @@ class ZendeskHandler extends WebformHandlerBase
             $response_fields = $client->ticketFields()->findAll();
             if( $response_fields->ticket_fields ) {
                 foreach($response_fields->ticket_fields as $field) {
-                    $form_ticket_fields[$field->id] = $field->title;
+                    if( !in_array($field->title,$form_field_exclusions) ) {
+                        $form_ticket_fields[$field->id] = $field->title;
+                    }
                 }
             }
 
