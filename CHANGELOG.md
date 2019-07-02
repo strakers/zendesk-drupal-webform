@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2019-07-02
+### Changed
+- Updated install instructions after registering with Packagist
 
 ## [0.2.1] - 2019-06-27
 ### Added
