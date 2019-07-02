@@ -127,6 +127,7 @@ class ZendeskHandler extends WebformHandlerBase
             'name' => [''],
             'hidden' => [''],
         ];
+        $form_ticket_fields = [];
 
         // get available email fields to use as requester email address
         foreach($webform_fields as $key => $field){
@@ -160,8 +161,8 @@ class ZendeskHandler extends WebformHandlerBase
 
         $assignees = [];
 
-        // get available assignees from zendesk
         try {
+            // get available assignees from zendesk
             // initiate api client
             $client = new ZendeskClient();
 
@@ -177,6 +178,15 @@ class ZendeskHandler extends WebformHandlerBase
 
             // order agents by name
             asort($assignees);
+
+            // get list of ticket fields and assign them to an array by id->title
+            $response_fields = $client->ticketFields()->findAll();
+            if( $response_fields->ticket_fields ) {
+                foreach($response_fields->ticket_fields as $field) {
+                    $form_ticket_fields[$field->id] = $field->title;
+                }
+            }
+
         }
         catch( \Exception $e ){
 
