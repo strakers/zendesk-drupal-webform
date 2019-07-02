@@ -11,6 +11,7 @@
 
 ### Changed
 - Deprecated helper functions on the ZendeskHandler class, to be removed in the next minor version
+- Replace old helper methods with Utility helper methods
 
 
 ## [0.3.0] - 2019-07-02
