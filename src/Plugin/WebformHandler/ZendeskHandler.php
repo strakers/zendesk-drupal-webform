@@ -101,8 +101,6 @@ class ZendeskHandler extends WebformHandlerBase
             'collaborators' => '',
             'custom_fields' => '',
             'ticket_id_field' => '',
-
-            // todo: look into attachments handling
         ];
     }
 
@@ -141,29 +139,29 @@ class ZendeskHandler extends WebformHandlerBase
 
         // get available email fields to use as requester email address
         foreach($webform_fields as $key => $field){
-            if( $this->checkIsGroupingField($field) ){
+            if( Utility::checkIsGroupingField($field) ){
                 foreach($field as $subkey => $subfield){
                     if(!preg_match("/^#/",$subkey) && isset($subfield['#type'])) {
-                        if ($this->checkIsEmailField($subfield)) {
+                        if (Utility::checkIsEmailField($subfield)) {
                             $options['email'][$subkey] = $subfield['#title'];
                         }
-                        elseif ($this->checkIsNameField($subfield)) {
+                        elseif (Utility::checkIsNameField($subfield)) {
                             $options['name'][$subkey] = $subfield['#title'];
                         }
-                        elseif ($this->checkIsHiddenField($subfield)) {
+                        elseif (Utility::checkIsHiddenField($subfield)) {
                             $options['hidden'][$subkey] = $subfield['#title'];
                         }
                     }
                 }
             }
             else{
-                if( $this->checkIsEmailField($field) ){
+                if( Utility::checkIsEmailField($field) ){
                     $options['email'][$key] = $field['#title'];
                 }
-                elseif( $this->checkIsNameField($field) ){
+                elseif( Utility::checkIsNameField($field) ){
                     $options['name'][$key] = $field['#title'];
                 }
-                elseif( $this->checkIsHiddenField($field) ){
+                elseif( Utility::checkIsHiddenField($field) ){
                     $options['hidden'][$key] = $field['#title'];
                 }
             }
@@ -354,8 +352,8 @@ class ZendeskHandler extends WebformHandlerBase
                 'placeholder' => '146455678: \'[webform_submission:value:email]\''
             ],
             '#required' => false,
-            '#more' => '<div class="zd-ticket-reference"><h3>Field Reference</h3>
-' . $this->convertTable($form_ticket_fields) .'</div>',
+            '#more_title' => 'Field Reference',
+            '#more' => '<div class="zd-ticket-reference">' . Utility::convertTable($form_ticket_fields) .'</div>',
         ];
 
         // display link for token variables
@@ -441,14 +439,14 @@ class ZendeskHandler extends WebformHandlerBase
             }
 
             // clean up tags
-            $request['tags'] = $this->cleanTags( $request['tags'] );
+            $request['tags'] = Utility::cleanTags( $request['tags'] );
             $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
 
             // restructure requester
             if(!isset($request['requester'])){
                 $request['requester'] = $request['requester_name']
                     ? [
-                        'name' => $this->convertName($request['requester_name']),
+                        'name' => Utility::convertName($request['requester_name']),
                         'email' => $request['requester_email'],
                     ]
                     : $request['requester_email'];
