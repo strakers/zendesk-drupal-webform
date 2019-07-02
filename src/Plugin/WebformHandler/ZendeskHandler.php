@@ -192,11 +192,14 @@ class ZendeskHandler extends WebformHandlerBase
             $response_fields = $client->ticketFields()->findAll();
             if( $response_fields->ticket_fields ) {
                 foreach($response_fields->ticket_fields as $field) {
+                    // exclude system ticket fields and inactive fields
                     if( !in_array($field->title,$form_field_exclusions) && $field->active ) {
                         $form_ticket_fields[$field->id] = $field->title;
                     }
                 }
             }
+
+            // order ticket fields by name
             asort($form_ticket_fields);
 
         }
