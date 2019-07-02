@@ -197,6 +197,7 @@ class ZendeskHandler extends WebformHandlerBase
                     }
                 }
             }
+            asort($form_ticket_fields);
 
         }
         catch( \Exception $e ){
