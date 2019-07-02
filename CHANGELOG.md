@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Add field reference for custom ticket fields
+
 ### Changed
 - Updated install instructions after registering with Packagist
 
