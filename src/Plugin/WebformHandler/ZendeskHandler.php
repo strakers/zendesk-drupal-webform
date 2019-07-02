@@ -127,6 +127,16 @@ class ZendeskHandler extends WebformHandlerBase
             'name' => [''],
             'hidden' => [''],
         ];
+        $form_ticket_fields = [];
+        $form_field_exclusions = [
+            'Subject',
+            'Description',
+            'Status',
+            'Type',
+            'Priority',
+            'Group',
+            'Assignee',
+        ];
 
         // get available email fields to use as requester email address
         foreach($webform_fields as $key => $field){
@@ -160,8 +170,8 @@ class ZendeskHandler extends WebformHandlerBase
 
         $assignees = [];
 
-        // get available assignees from zendesk
         try {
+            // get available assignees from zendesk
             // initiate api client
             $client = new ZendeskClient();
 
@@ -177,6 +187,21 @@ class ZendeskHandler extends WebformHandlerBase
 
             // order agents by name
             asort($assignees);
+
+            // get list of ticket fields and assign them to an array by id->title
+            $response_fields = $client->ticketFields()->findAll();
+            if( $response_fields->ticket_fields ) {
+                foreach($response_fields->ticket_fields as $field) {
+                    // exclude system ticket fields and inactive fields
+                    if( !in_array($field->title,$form_field_exclusions) && $field->active ) {
+                        $form_ticket_fields[$field->id] = $field->title;
+                    }
+                }
+            }
+
+            // order ticket fields by name
+            asort($form_ticket_fields);
+
         }
         catch( \Exception $e ){
 
@@ -319,7 +344,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#title' => $this->t('Ticket Custom Fields'),
             '#help' => $this->t('Custom form fields for the ticket'),
             '#description' => $this->t(
-                '<div id="help">To set the value of one or more custom fields in the new Zendesk ticket, in <a href="https://learn.getgrav.org/16/advanced/yaml#mappings" target="_blank">YAML format</a>, specify a list of pairs consisting of IDs and values. You may find the custom field ID when viewing the list of <a href="https://'.$zendesk_subdomain.'.zendesk.com/agent/admin/ticket_fields" target="_blank">Ticket Fields</a> in Zendesk. Values may be plain text, or Drupal webform tokens/placeholders. <p class="">Eg. <code class="CodeMirror"><span>12345678</span>: <span>\'foobar\'</span></code></p> </div>'
+                '<div id="help">To set the value of one or more custom fields in the new Zendesk ticket, in <a href="https://learn.getgrav.org/16/advanced/yaml#mappings" target="_blank">YAML format</a>, specify a list of pairs consisting of IDs and values. You may find the custom field ID when viewing the list of <a href="https://'.$zendesk_subdomain.'.zendesk.com/agent/admin/ticket_fields" target="_blank">Ticket Fields</a> in Zendesk, or by clicking "<strong>More</strong>" below for a list of available fields. Values may be plain text, or Drupal webform tokens/placeholders. <p class="">Eg. <code class="CodeMirror"><span>12345678</span>: <span>\'foobar\'</span></code></p> </div>'
             ),
             '#default_value' => $this->configuration['custom_fields'],
             '#description_display' => 'before',
@@ -327,7 +352,9 @@ class ZendeskHandler extends WebformHandlerBase
             '#attributes' => [
                 'placeholder' => '146455678: \'[webform_submission:value:email]\''
             ],
-            '#required' => false
+            '#required' => false,
+            '#more' => '<div class="zd-ticket-reference"><h3>Field Reference</h3>
+' . $this->convertTable($form_ticket_fields) .'</div>',
         ];
 
         // display link for token variables
@@ -633,5 +660,21 @@ class ZendeskHandler extends WebformHandlerBase
             $name->degree
         ];
         return implode(' ',array_filter($map,'trim'));
+    }
+
+    /**
+     * @param array $text
+     * @return string
+     */
+    protected function convertTable( $set ){
+        $html = '';
+        if( $set ) {
+            $html = '<table><thead><tr><th>Title</th><th>ID</th></tr></thead><tbody>';
+            foreach ($set as $id => $val) {
+                $html .= '<tr><td>' . $val . '</td><td>' . $id . '</td></tr>';
+            }
+            $html .= '</tbody></table>';
+        }
+        return $html;
     }
 }
