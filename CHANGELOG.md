@@ -1,8 +1,12 @@
 # Changelog
 
 ## [Unreleased]
+
+
+## [1.0.0] - 2019-07-02
 ### Added
 - Add field reference for custom ticket fields
+- Launch full release
 
 
 ## [0.3.0] - 2019-07-02
@@ -78,7 +82,8 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.1.0...v0.2.0
