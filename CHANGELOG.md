@@ -6,7 +6,12 @@
 ## [1.0.0] - 2019-07-02
 ### Added
 - Add field reference for custom ticket fields
+- New helper class Utility to separate helper functions for sanity and maintenance
 - Launch full release
+
+### Changed
+- Deprecated helper functions on the ZendeskHandler class, to be removed in the next minor version
+- Replace old helper methods with Utility helper methods
 
 
 ## [0.3.0] - 2019-07-02

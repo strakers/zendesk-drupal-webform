@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\webform\WebformTokenManagerInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\file\Entity\File;
+use Drupal\zendesk_webform\Utils\Utility;
 
 
 /**
@@ -100,8 +101,6 @@ class ZendeskHandler extends WebformHandlerBase
             'collaborators' => '',
             'custom_fields' => '',
             'ticket_id_field' => '',
-
-            // todo: look into attachments handling
         ];
     }
 
@@ -140,29 +139,29 @@ class ZendeskHandler extends WebformHandlerBase
 
         // get available email fields to use as requester email address
         foreach($webform_fields as $key => $field){
-            if( $this->checkIsGroupingField($field) ){
+            if( Utility::checkIsGroupingField($field) ){
                 foreach($field as $subkey => $subfield){
                     if(!preg_match("/^#/",$subkey) && isset($subfield['#type'])) {
-                        if ($this->checkIsEmailField($subfield)) {
+                        if (Utility::checkIsEmailField($subfield)) {
                             $options['email'][$subkey] = $subfield['#title'];
                         }
-                        elseif ($this->checkIsNameField($subfield)) {
+                        elseif (Utility::checkIsNameField($subfield)) {
                             $options['name'][$subkey] = $subfield['#title'];
                         }
-                        elseif ($this->checkIsHiddenField($subfield)) {
+                        elseif (Utility::checkIsHiddenField($subfield)) {
                             $options['hidden'][$subkey] = $subfield['#title'];
                         }
                     }
                 }
             }
             else{
-                if( $this->checkIsEmailField($field) ){
+                if( Utility::checkIsEmailField($field) ){
                     $options['email'][$key] = $field['#title'];
                 }
-                elseif( $this->checkIsNameField($field) ){
+                elseif( Utility::checkIsNameField($field) ){
                     $options['name'][$key] = $field['#title'];
                 }
-                elseif( $this->checkIsHiddenField($field) ){
+                elseif( Utility::checkIsHiddenField($field) ){
                     $options['hidden'][$key] = $field['#title'];
                 }
             }
@@ -344,7 +343,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#title' => $this->t('Ticket Custom Fields'),
             '#help' => $this->t('Custom form fields for the ticket'),
             '#description' => $this->t(
-                '<div id="help">To set the value of one or more custom fields in the new Zendesk ticket, in <a href="https://learn.getgrav.org/16/advanced/yaml#mappings" target="_blank">YAML format</a>, specify a list of pairs consisting of IDs and values. You may find the custom field ID when viewing the list of <a href="https://'.$zendesk_subdomain.'.zendesk.com/agent/admin/ticket_fields" target="_blank">Ticket Fields</a> in Zendesk, or by clicking "<strong>More</strong>" below for a list of available fields. Values may be plain text, or Drupal webform tokens/placeholders. <p class="">Eg. <code class="CodeMirror"><span>12345678</span>: <span>\'foobar\'</span></code></p> </div>'
+                '<div id="help">To set the value of one or more custom fields in the new Zendesk ticket, in <a href="https://learn.getgrav.org/16/advanced/yaml#mappings" target="_blank">YAML format</a>, specify a list of pairs consisting of IDs and values. You may find the custom field ID when viewing the list of <a href="https://'.$zendesk_subdomain.'.zendesk.com/agent/admin/ticket_fields" target="_blank">Ticket Fields</a> in Zendesk, or by clicking "<strong>Field Reference</strong>" below for a list of available fields. Values may be plain text, or Drupal webform tokens/placeholders. <p class="">Eg. <code class="CodeMirror"><span>12345678</span>: <span>\'foobar\'</span></code></p> </div>'
             ),
             '#default_value' => $this->configuration['custom_fields'],
             '#description_display' => 'before',
@@ -353,8 +352,8 @@ class ZendeskHandler extends WebformHandlerBase
                 'placeholder' => '146455678: \'[webform_submission:value:email]\''
             ],
             '#required' => false,
-            '#more' => '<div class="zd-ticket-reference"><h3>Field Reference</h3>
-' . $this->convertTable($form_ticket_fields) .'</div>',
+            '#more_title' => 'Field Reference',
+            '#more' => '<div class="zd-ticket-reference">' . Utility::convertTable($form_ticket_fields) .'</div>',
         ];
 
         // display link for token variables
@@ -440,14 +439,14 @@ class ZendeskHandler extends WebformHandlerBase
             }
 
             // clean up tags
-            $request['tags'] = $this->cleanTags( $request['tags'] );
+            $request['tags'] = Utility::cleanTags( $request['tags'] );
             $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
 
             // restructure requester
             if(!isset($request['requester'])){
                 $request['requester'] = $request['requester_name']
                     ? [
-                        'name' => $this->convertName($request['requester_name']),
+                        'name' => Utility::convertName($request['requester_name']),
                         'email' => $request['requester_email'],
                     ]
                     : $request['requester_email'];
@@ -588,48 +587,6 @@ class ZendeskHandler extends WebformHandlerBase
         return $this->token_manager;
     }
 
-    // formatting and condition helper functions
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsNameField( array $field ){
-        return in_array( $field['#type'], [ 'webform_name', 'textfield' ] );
-    }
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsEmailField( array $field ){
-        return in_array( $field['#type'], [ 'email', 'webform_email_confirm' ] );
-    }
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsHiddenField( array $field ){
-        return $field['#type'] === 'hidden' ;
-    }
-
-    /**
-     * @param array $field
-     * @return bool
-     */
-    protected function checkIsGroupingField( array $field ){
-        return in_array( $field['#type'], [ 'webform_section' ] );
-    }
-
-    /**
-     * @param string $text
-     * @return string
-     */
-    protected function cleanTags( $text = '' ){
-        return implode(' ',preg_split("/[^a-z0-9_]+/i",strtolower($text)));
-    }
-
     /**
      * @return array
      */
@@ -637,44 +594,77 @@ class ZendeskHandler extends WebformHandlerBase
         return $this->getWebform()->getElementsManagedFiles();
     }
 
+    // Deprecated functions
+
     /**
-     * @param string $text
-     * @return string
+     * @param array $field
+     * @return bool
+     * @deprecated 
      */
-    protected function convertTags( $text = '' ){
-        return strtolower(implode(' ',preg_split("/[^a-z0-9_]+/i",$text)));
+    protected function checkIsNameField( array $field ){
+        return Utility::checkIsNameField($field);
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     * @deprecated
+     */
+    protected function checkIsEmailField( array $field ){
+        return Utility::checkIsEmailField($field);
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     * @deprecated
+     */
+    protected function checkIsHiddenField( array $field ){
+        return Utility::checkIsHiddenField($field);
+    }
+
+    /**
+     * @param array $field
+     * @return bool
+     * @deprecated
+     */
+    protected function checkIsGroupingField( array $field ){
+        return Utility::checkIsGroupingField($field);
     }
 
     /**
      * @param string $text
      * @return string
+     * @deprecated
+     */
+    protected function cleanTags( $text = '' ){
+        return Utility::cleanTags($text);
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     * @deprecated
+     */
+    protected function convertTags( $text = '' ){
+        return Utility::convertTags($text);
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     * @deprecated
      */
     protected function convertName( $name_parts ){
-        $name = (object) $name_parts;
-        $map = [
-            $name->title,
-            $name->first,
-            $name->middle,
-            $name->last,
-            $name->suffix,
-            $name->degree
-        ];
-        return implode(' ',array_filter($map,'trim'));
+        return Utility::convertName($name_parts);
     }
 
     /**
      * @param array $text
      * @return string
+     * @deprecated
      */
     protected function convertTable( $set ){
-        $html = '';
-        if( $set ) {
-            $html = '<table><thead><tr><th>Title</th><th>ID</th></tr></thead><tbody>';
-            foreach ($set as $id => $val) {
-                $html .= '<tr><td>' . $val . '</td><td>' . $id . '</td></tr>';
-            }
-            $html .= '</tbody></table>';
-        }
-        return $html;
+        return Utility::convertTable($set);
     }
 }
