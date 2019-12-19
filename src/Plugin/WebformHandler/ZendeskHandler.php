@@ -446,7 +446,7 @@ class ZendeskHandler extends WebformHandlerBase
             if(!isset($request['requester'])){
                 $request['requester'] = $request['requester_name']
                     ? [
-                        'name' => Utility::convertName($request['requester_name']),
+                        'name' => $request['requester_name'],
                         'email' => $request['requester_email'],
                     ]
                     : $request['requester_email'];
