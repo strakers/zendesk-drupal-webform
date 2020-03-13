@@ -19,17 +19,30 @@ class Name
     public $suffix = '';
     public $degree = '';
 
-    public function __construct( array $name_array )
+    /**
+     * Name constructor.
+     * @param array|string $name_array
+     */
+    public function __construct( $name_array )
     {
-        $name_obj = (object) $name_array;
-        if(isset($name_obj->title)) $this->title = $name_obj->title;
-        if(isset($name_obj->first)) $this->first = $name_obj->first;
-        if(isset($name_obj->middle)) $this->middle = $name_obj->middle;
-        if(isset($name_obj->last)) $this->last = $name_obj->last;
-        if(isset($name_obj->suffix)) $this->suffix = $name_obj->suffix;
-        if(isset($name_obj->degree)) $this->degree = $name_obj->degree;
+        // check if single string name is passed
+        if( is_string($name_array) ) {
+            $this->first = $name_array;
+        }
+        else {
+            $name_obj = (object)$name_array;
+            if (isset($name_obj->title)) $this->title = $name_obj->title;
+            if (isset($name_obj->first)) $this->first = $name_obj->first;
+            if (isset($name_obj->middle)) $this->middle = $name_obj->middle;
+            if (isset($name_obj->last)) $this->last = $name_obj->last;
+            if (isset($name_obj->suffix)) $this->suffix = $name_obj->suffix;
+            if (isset($name_obj->degree)) $this->degree = $name_obj->degree;
+        }
     }
 
+    /**
+     * @return string
+     */
     public function get()
     {
         // forces desired ordering of name values
@@ -42,5 +55,14 @@ class Name
             $this->degree
         ];
         return implode(' ',array_filter($name_parts,'trim'));
+    }
+
+    /**
+     * @param array|string $name_array
+     * @return string
+     */
+    static public function process( $name_array )
+    {
+        return (new self($name_array))->get();
     }
 }

@@ -65,24 +65,15 @@ class Utility
     }
 
     /**
-     * @param string $text
+     * @param array $name_parts
      * @return string
      */
     static public function convertName( $name_parts ){
-        $name = (object) $name_parts;
-        $map = [
-            $name->title,
-            $name->first,
-            $name->middle,
-            $name->last,
-            $name->suffix,
-            $name->degree
-        ];
-        return implode(' ',array_filter($map,'trim'));
+        return Name::process($name_parts);
     }
 
     /**
-     * @param array $text
+     * @param array $set
      * @return string
      */
     static public function convertTable( $set ){
