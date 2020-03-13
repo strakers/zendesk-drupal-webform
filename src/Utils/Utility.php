@@ -69,6 +69,7 @@ class Utility
      * @return string
      */
     static public function convertName( $name_parts ){
+        // use polyfill class to convert names in either string or array formats
         return Name::process($name_parts);
     }
 
