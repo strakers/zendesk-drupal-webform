@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Implement new Name Utility class to polyfill expected name values
+
+### Fixed
+- Fix Issue #30 Error when setting requester_name to full name on the webform
 
 
 ## [1.0.0] - 2019-07-02
