@@ -493,7 +493,7 @@ class ZendeskHandler extends WebformHandlerBase
                     if( in_array($key, $file_fields) && !empty($submission_field) ){
 
                         // get file from id for upload
-                        $file = File::load($submission_field[0]);
+                        $file = File::load($submission_field);
 
                         // add uploads key to Zendesk comment, if not already present
                         if( $file && !array_key_exists('uploads', $request['comment']) ){
