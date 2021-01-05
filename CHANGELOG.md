@@ -1,6 +1,20 @@
 # Changelog
 
 ## [Unreleased]
+
+
+## [1.0.0] - 2019-07-02
+### Added
+- Add field reference for custom ticket fields
+- New helper class Utility to separate helper functions for sanity and maintenance
+- Launch full release
+
+### Changed
+- Deprecated helper functions on the ZendeskHandler class, to be removed in the next minor version
+- Replace old helper methods with Utility helper methods
+
+
+## [0.3.0] - 2019-07-02
 ### Changed
 - Updated install instructions after registering with Packagist
 
@@ -73,7 +87,9 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.3.0...v1.0.0
+[0.3.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.0.3...v0.1.0
