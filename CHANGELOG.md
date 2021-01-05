@@ -1,12 +1,14 @@
 # Changelog
 
 ## [Unreleased]
+
+## [1.1.0] - 2021-01-05
 ### Added
 - Implement new Name Utility class to polyfill expected name values
 
 ### Fixed
-- Fix Issue #30 Error when setting requester_name to full name on the webform
-- Fix Issue #37 Attaching all uploaded files, regardless of the file field limit
+- Fix error when setting requester_name to full name on the webform
+- Fix issue attaching all uploaded files, regardless of the file field limit
 
 
 ## [1.0.0] - 2019-07-02
@@ -93,7 +95,8 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.0...v0.2.1
