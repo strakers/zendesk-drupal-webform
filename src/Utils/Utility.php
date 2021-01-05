@@ -69,6 +69,9 @@ class Utility
      * @return string
      */
     static public function convertName( $name_parts ){
+        if (is_string($name_parts)) {
+          return $name_parts;
+        }
         $name = (object) $name_parts;
         $map = [
             $name->title,
