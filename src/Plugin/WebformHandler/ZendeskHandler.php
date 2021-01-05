@@ -492,7 +492,7 @@ class ZendeskHandler extends WebformHandlerBase
                 foreach($submission_fields['data'] as $key => $submission_field){
                     if( in_array($key, $file_fields) && !empty($submission_field) ){
 
-                        // pack file index/indices into an array
+                        // pack file index/indices into an array for looping
                         if( is_array( $submission_field ) ){
                             $file_indices = $submission_field;
                         } else {
