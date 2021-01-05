@@ -492,24 +492,36 @@ class ZendeskHandler extends WebformHandlerBase
                 foreach($submission_fields['data'] as $key => $submission_field){
                     if( in_array($key, $file_fields) && !empty($submission_field) ){
 
-                        // get file from id for upload
-                        $file = File::load($submission_field[0]);
-
-                        // add uploads key to Zendesk comment, if not already present
-                        if( $file && !array_key_exists('uploads', $request['comment']) ){
-                            $request['comment']['uploads'] = [];
+                        // pack file index/indices into an array for looping
+                        if( is_array( $submission_field ) ){
+                            $file_indices = $submission_field;
+                        } else {
+                            $file_indices = []; // clear var
+                            $file_indices[] = $submission_field;
                         }
 
-                        // upload file and get response
-                        $attachment = $client->attachments()->upload([
-                            'file' => $file->getFileUri(),
-                            'type' => $file->getMimeType(),
-                            'name' => $file->getFileName(),
-                        ]);
+                        // individually attach each uploaded file per file submission_field
+                        foreach( $file_indices as $file_index) {
 
-                        // add upload token to comment
-                        if( $attachment && isset($attachment->upload->token) ){
-                            $request['comment']['uploads'][] = $attachment->upload->token;
+                            // get file from index for upload
+                            $file = File::load($file_index);
+
+                            // add uploads key to Zendesk comment, if not already present
+                            if ($file && !array_key_exists('uploads', $request['comment'])) {
+                                $request['comment']['uploads'] = [];
+                            }
+
+                            // upload file and get response
+                            $attachment = $client->attachments()->upload([
+                                'file' => $file->getFileUri(),
+                                'type' => $file->getMimeType(),
+                                'name' => $file->getFileName(),
+                            ]);
+
+                            // add upload token to comment
+                            if ($attachment && isset($attachment->upload->token)) {
+                                $request['comment']['uploads'][] = $attachment->upload->token;
+                            }
                         }
                     }
                 }

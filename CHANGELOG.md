@@ -6,6 +6,7 @@
 
 ### Fixed
 - Fix Issue #30 Error when setting requester_name to full name on the webform
+- Fix Issue #37 Attaching all uploaded files, regardless of the file field limit
 
 
 ## [1.0.0] - 2019-07-02
