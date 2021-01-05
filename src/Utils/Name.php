@@ -25,10 +25,11 @@ class Name
      */
     public function __construct( $name_array )
     {
-        // check if single string name is passed
+        // check if single string name is passed (if simple text field is used - not recommended)
         if( is_string($name_array) ) {
             $this->first = $name_array;
         }
+        // when complex Name field is used (recommended)
         else {
             $name_obj = (object)$name_array;
             if (isset($name_obj->title)) $this->title = $name_obj->title;
