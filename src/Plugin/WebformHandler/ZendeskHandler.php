@@ -492,17 +492,18 @@ class ZendeskHandler extends WebformHandlerBase
                 foreach($submission_fields['data'] as $key => $submission_field){
                     if( in_array($key, $file_fields) && !empty($submission_field) ){
 
-                        // check whether one or more files have been uploaded
+                        // pack file index/indices into an array
                         if( is_array( $submission_field ) ){
                             $file_indices = $submission_field;
                         } else {
+                            $file_indices = []; // clear var
                             $file_indices[] = $submission_field;
                         }
 
-                        // individually attached each uploaded file per file_field
+                        // individually attach each uploaded file per file submission_field
                         foreach( $file_indices as $file_index) {
 
-                            // get file from id for upload
+                            // get file from index for upload
                             $file = File::load($file_index);
 
                             // add uploads key to Zendesk comment, if not already present
