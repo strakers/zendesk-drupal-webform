@@ -65,27 +65,16 @@ class Utility
     }
 
     /**
-     * @param string $text
+     * @param array $name_parts
      * @return string
      */
     static public function convertName( $name_parts ){
-        if (is_string($name_parts)) {
-          return $name_parts;
-        }
-        $name = (object) $name_parts;
-        $map = [
-            $name->title,
-            $name->first,
-            $name->middle,
-            $name->last,
-            $name->suffix,
-            $name->degree
-        ];
-        return implode(' ',array_filter($map,'trim'));
+        // use polyfill class to convert names in either string or array formats
+        return Name::process($name_parts);
     }
 
     /**
-     * @param array $text
+     * @param array $set
      * @return string
      */
     static public function convertTable( $set ){
