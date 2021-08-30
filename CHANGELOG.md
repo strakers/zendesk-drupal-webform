@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+### Changed
+- Updated dependencies for Drupal 9
 
 
 ## [1.1.0] - 2021-01-05
