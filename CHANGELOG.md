@@ -3,15 +3,24 @@
 ## [Unreleased]
 
 
+## [1.1.0] - 2021-01-05
+### Added
+- Implemented new Name Utility class to polyfill expected name values
+
+### Fixed
+- Fixed error when setting requester_name to full name on the webform
+- Fixed issue attaching all uploaded files, regardless of the file field limit
+
+
 ## [1.0.0] - 2019-07-02
 ### Added
-- Add field reference for custom ticket fields
+- Field reference for custom ticket fields
 - New helper class Utility to separate helper functions for sanity and maintenance
-- Launch full release
+- Launched full release
 
 ### Changed
 - Deprecated helper functions on the ZendeskHandler class, to be removed in the next minor version
-- Replace old helper methods with Utility helper methods
+- Replaced old helper methods with Utility helper methods
 
 
 ## [0.3.0] - 2019-07-02
@@ -20,7 +29,7 @@
 
 ## [0.2.1] - 2019-06-27
 ### Added
-- Update Drupal webform submission with Zendesk Ticket ID, if field is present on form
+- Means to update Drupal webform submission with Zendesk Ticket ID, if field is present on form
 - Allow for specifying any hidden field on the form as the Zendesk Ticket ID Field to be updated
 
 ### Changed
@@ -45,7 +54,7 @@
 ### Fixed
 - Changed YAML placeholder values to use single quotations
 - Only display custom fields when present
-- Remove second occurence of "clean up tags" block
+- Removed second occurence of "clean up tags" block
 
 
 ## [0.1.0] - 2019-05-28
@@ -53,8 +62,8 @@
 - Optionally set an assignee for the Webform Handler
 
 ### Changed
-- Make project description more accurate
-- Update README file with documentation
+- Made project description more accurate
+- Updated README file with documentation
 
 ### Fixed
 - Webform submissions no longer create multiple tickets
@@ -63,7 +72,7 @@
 ## [0.0.3] - 2019-05-22
 ### Added
 - Parsing for CC email addresses
-- Upload webform file attachments to Zendesk ticket
+- Now uploads webform file attachments to Zendesk ticket
 
 ### Changed
 - Updated the settings form fields with field descriptions
@@ -87,7 +96,8 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.0...v0.2.1
