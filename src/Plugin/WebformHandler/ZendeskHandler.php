@@ -52,31 +52,12 @@ class ZendeskHandler extends WebformHandlerBase
      */
     public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
 
-
-        $logger_factory = $container->get('logger.factory');
-        $config_factory = $container->get('config.factory');
-        $entity_type_manager = $container->get('entity_type.manager');
-        $webform_submission_conditions_validator = $container->get('webform_submission.conditions_validator');
-        $webform_token_manager = $container->get('webform.token_manager');
-
         /**
-         * @var LoggerChannelFactoryInterface $logger_factory
-         * @var ConfigFactoryInterface $config_factory
-         * @var EntityTypeManagerInterface $entity_type_manager
-         * @var WebformSubmissionConditionsValidatorInterface $webform_submission_conditions_validator
          * @var WebformTokenManagerInterface $webform_token_manager
          */
 
-        $static = new static(
-            $configuration,
-            $plugin_id,
-            $plugin_definition,
-            $logger_factory,
-            $config_factory,
-            $entity_type_manager,
-            $webform_submission_conditions_validator
-        );
-
+        $static = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+        $webform_token_manager = $container->get('webform.token_manager');
         $static->setTokenManager( $webform_token_manager );
 
         return $static;

@@ -5,14 +5,19 @@ Add a webform handler to create Zendesk tickets from Drupal webform submissions.
 With [composer/installers](https://github.com/composer/installers) in effect, Drupal packages are installed to their own specified paths. However the default 
 configs for Drupal packages don't include custom modules. We'll need to add one:
 
-Add the following to the `extra.installer-paths` object:
+If not already present, add the following to the `extra.installer-paths` object in your composer file:
 ```text
 "web/modules/custom/{$name}": ["type:drupal-custom-module"],
 ```
 
-Then, run the following command in your terminal to require this package:
+Then, for Drupal 9, run the following command in your terminal to require this package:
 ```bash
 composer require strakez/zendesk-webform
+```
+
+For Drupal 8, version `v1.1.0` retains support:
+```bash
+composer require strakez/zendesk-webform:^1.1
 ```
 
 
