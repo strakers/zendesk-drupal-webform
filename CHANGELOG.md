@@ -4,6 +4,9 @@
 ### Changed
 - Updated dependencies for Drupal 9
 
+### Fixed
+- Fixed #42 Issue preventing the Zendesk Handler Add/Edit form from loading in Drupal 9
+
 
 ## [1.1.0] - 2021-01-05
 ### Added
