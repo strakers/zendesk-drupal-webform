@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+
+
+## [2.0.0] - 2021-08-31
 ### Changed
 - Updated dependencies for Drupal 9
 
@@ -102,6 +105,7 @@
 
 
 [Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...HEAD
+[2.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.3.0...v1.0.0
 [0.3.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.2.1...v0.3.0
