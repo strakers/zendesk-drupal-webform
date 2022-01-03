@@ -20,6 +20,7 @@ use Drupal\webform\WebformTokenManagerInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\file\Entity\File;
 use Drupal\zendesk_webform\Utils\Utility;
+use Drupal\Core\Config\ImmutableConfig;
 
 
 /**
@@ -82,6 +83,7 @@ class ZendeskHandler extends WebformHandlerBase
             'collaborators' => '',
             'custom_fields' => '',
             'ticket_id_field' => '',
+            'delete_after_delivery' => 0,
         ];
     }
 
@@ -101,7 +103,7 @@ class ZendeskHandler extends WebformHandlerBase
     {
 
         $webform_fields = $this->getWebform()->getElementsDecoded();
-        $zendesk_subdomain = \Drupal::config('zendesk_webform.adminsettings')->get('subdomain');
+        $zendesk_subdomain = $this->getAdminSettings()->get('subdomain');
         $options = [
             'email' => [''],
             'name' => [''],
@@ -349,6 +351,19 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
+        // Advanced Settings.
+        $form['advanced'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Advanced Settings'),
+        ];
+        $form['advanced']['delete_after_delivery'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Enable record deletion after delivery'),
+            '#description' => $this->t('If checked, the webform submission data will be deleted after a Zendesk ticket is successfully created.'),
+            '#return_value' => true,
+            '#default_value' => $this->configuration['delete_after_delivery'],
+        ];
+
         return parent::buildConfigurationForm($form, $form_state);
     }
 
@@ -510,6 +525,13 @@ class ZendeskHandler extends WebformHandlerBase
                 // create ticket
                 $new_ticket = $client->tickets()->create($request);
 
+
+                // if configured, delete webform submission after ticket creation, and end
+                if ($new_ticket && $configuration['delete_after_delivery']) {
+                    $webform_submission->delete();
+                    return;
+                }
+
                 // retrieve the name of the field in which to store the created Zendesk Ticket ID
                 $zendesk_ticket_id_field_name = $configuration['ticket_id_field'];
                 
@@ -562,6 +584,13 @@ class ZendeskHandler extends WebformHandlerBase
             '#theme' => 'markup',
             '#markup' => implode('<br>',$markup),
         ];
+    }
+
+    /**
+     * @return ImmutableConfig
+     */
+    public function getAdminSettings(){
+        return \Drupal::config('zendesk_webform.adminsettings');
     }
 
     /**
