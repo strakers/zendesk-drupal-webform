@@ -339,29 +339,42 @@ class ZendeskHandler extends WebformHandlerBase
             '#more' => '<div class="zd-ticket-reference">' . Utility::convertTable($form_ticket_fields) .'</div>',
         ];
 
-        // display link for token variables
-        $form['token_link'] = $this->getTokenManager()->buildTreeLink();
+        // hide display link for token variables - already displayed at bottom
+        //$form['token_link'] = $this->getTokenManager()->buildTreeLink();
 
-        $form['ticket_id_field'] = [
+        // build advanced section --------------------------------------------------------------------------------------
+
+        // Advanced Settings.
+        $form['advanced'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Advanced Configurations'),
+            '#open' => TRUE,
+        ];
+
+        $form['advanced']['ticket_id_field'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Zendesk Ticket ID Field'),
-            '#description' => $this->t('The name of hidden field which will be updated with the created Ticket ID.'),
+            '#description' => $this->t('<div id="help" style="margin:.5em 0">The name of hidden field which will store the created Zendesk Ticket ID.</div>'),
+            '#help' => $this->t('Make sure to build at least one hidden field for use.'),
+            '#description_display' => 'before',
             '#default_value' => $this->configuration['ticket_id_field'],
             '#options' => $options['hidden'],
             '#required' => false
         ];
 
-        // Advanced Settings.
-        $form['advanced'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Advanced Settings'),
+        $form['advanced']['delete_option_label'] = [
+            '#type' => 'label',
+            '#title' => $this->t('Record Deletion On Delivery'),
         ];
+
         $form['advanced']['delete_after_delivery'] = [
             '#type' => 'checkbox',
             '#title' => $this->t('Enable record deletion after delivery'),
-            '#description' => $this->t('If checked, the webform submission data will be deleted after a Zendesk ticket is successfully created.'),
-            '#return_value' => true,
+            '#required' => false,
             '#default_value' => $this->configuration['delete_after_delivery'],
+            '#description' => $this->t('<div id="help">If checked, the webform submission data will be deleted after the Zendesk ticket has been successfully created. The submission will <strong>not</strong> be deleted if ticket creation fails. Please note that deleted submissions cannot be recovered.</div><br />'),
+            '#help' => $this->t('Select to auto-delete tickets'),
+            '#description_display' => 'before',
         ];
 
         return parent::buildConfigurationForm($form, $form_state);
