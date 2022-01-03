@@ -1,6 +1,12 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Option to automatically delete submissions after successful Zendesk ticket creation
+- 
+### Changed
+- Organized Handler configuration form fields into sections
+- Fix issue preventing fields contained in sections from updating when saved
 
 
 ## [2.0.0] - 2021-08-31
