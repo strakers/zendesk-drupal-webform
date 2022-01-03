@@ -404,10 +404,20 @@ class ZendeskHandler extends WebformHandlerBase
     {
         parent::submitConfigurationForm($form, $form_state);
 
+        // loop through submission values and update only those specified in the configuration
         $submission_value = $form_state->getValues();
-        foreach($this->configuration as $key => $value){
-            if(isset($submission_value[$key])){
-                $this->configuration[$key] = $submission_value[$key];
+        foreach($submission_value as $key => $value) {
+            // check for field values nested in sections
+            if (is_array($value)) {
+                foreach($value as $sub_key => $sub_value) {
+                    if (array_key_exists($sub_key,$this->configuration)) {
+                        $this->configuration[$sub_key] = $sub_value;
+                    }
+                }
+            }
+            // check for field values outside
+            elseif (array_key_exists($key,$this->configuration)) {
+                $this->configuration[$key] = $value;
             }
         }
     }
