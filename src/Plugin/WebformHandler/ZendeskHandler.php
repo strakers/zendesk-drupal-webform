@@ -199,9 +199,32 @@ class ZendeskHandler extends WebformHandlerBase
             ]);
         }
 
-        // build form fields
+        // build form sections -----------------------------------------------------------------------------------------
 
-        $form['requester_name'] = [
+        // Basic Settings for Requesters, Assignees, and Cc-ed contacts.
+        $form['people'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Ticket Contact Details'),
+            '#open' => TRUE,
+        ];
+
+        // Basic Settings for Ticket Content and Tags.
+        $form['content'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Ticket Content Settings'),
+            '#open' => TRUE,
+        ];
+
+        // Basic Settings for Ticket Fields.
+        $form['ticket'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Ticket Field Settings'),
+            '#open' => TRUE,
+        ];
+
+        // build form fields -------------------------------------------------------------------------------------------
+
+        $form['people']['requester_name'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Requester name'),
             '#description' => $this->t('The name of the user who requested this ticket. Select from available name fields, or specify a name.'),
@@ -210,7 +233,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        $form['requester_email'] = [
+        $form['people']['requester_email'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Requester email address'),
             '#description' => $this->t('The email address of user who requested this ticket. Select from available email fields, or specify an email address.'),
@@ -219,7 +242,37 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
-        $form['subject'] = [
+        // prep assignees field
+        // if found assignees from Zendesk, populate dropdown.
+        // otherwise provide field to specify assignee ID
+        $form['people']['assignee_id'] = [
+            '#title' => $this->t('Ticket Assignee'),
+            '#description' => $this->t('The id of the intended assignee'),
+            '#default_value' => $this->configuration['assignee_id'],
+            '#required' => false
+        ];
+        if(! empty($assignees) ){
+            $form['people']['assignee_id']['#type'] = 'webform_select_other';
+            $form['people']['assignee_id']['#options'] = ['' => '-- none --'] + $assignees;
+            $form['people']['assignee_id']['#description'] = $this->t('The email address the assignee');
+        }
+        else {
+            $form['people']['assignee_id']['#type'] = 'textfield';
+            $form['people']['assignee_id']['#attribute'] = [
+                'type' => 'number'
+            ];
+        }
+
+        $form['people']['collaborators'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Ticket CCs'),
+            '#description' => $this->t('Users to add as cc\'s when creating a ticket.'),
+            '#default_value' => $this->configuration['collaborators'],
+            '#multiple' => true,
+            '#required' => false
+        ];
+
+        $form['content']['subject'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Subject'),
             '#description' => $this->t('The value of the subject field for this ticket'),
@@ -227,7 +280,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
-        $form['comment'] = [
+        $form['content']['comment'] = [
             '#type' => 'textarea',
             '#title' => $this->t('Ticket Body'),
             '#description' => $this->t('The initial comment/message of the ticket.'),
@@ -236,7 +289,17 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
-        $form['type'] = [
+        // space separated tags
+        $form['content']['tags'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Ticket Tags'),
+            '#description' => $this->t('The list of tags applied to this ticket.'),
+            '#default_value' => $this->configuration['tags'],
+            '#multiple' => true,
+            '#required' => false
+        ];
+
+        $form['ticket']['type'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Type'),
             '#description' => $this->t('The type of this ticket. Possible values: "problem", "incident", "question" or "task".'),
@@ -250,17 +313,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        // space separated tags
-        $form['tags'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Ticket Tags'),
-            '#description' => $this->t('The list of tags applied to this ticket.'),
-            '#default_value' => $this->configuration['tags'],
-            '#multiple' => true,
-            '#required' => false
-        ];
-
-        $form['priority'] = [
+        $form['ticket']['priority'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Priority'),
             '#description' => $this->t('The urgency with which the ticket should be addressed. Possible values: "urgent", "high", "normal", "low".'),
@@ -274,7 +327,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        $form['status'] = [
+        $form['ticket']['status'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Status'),
             '#description' => $this->t('The state of the ticket. Possible values: "new", "open", "pending", "hold", "solved", "closed".'),
@@ -290,37 +343,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        // prep assignees field
-        // if found assignees from Zendesk, populate dropdown.
-        // otherwise provide field to specify assignee ID
-        $form['assignee_id'] = [
-            '#title' => $this->t('Ticket Assignee'),
-            '#description' => $this->t('The id of the intended assignee'),
-            '#default_value' => $this->configuration['assignee_id'],
-            '#required' => false
-        ];
-        if(! empty($assignees) ){
-            $form['assignee_id']['#type'] = 'webform_select_other';
-            $form['assignee_id']['#options'] = ['' => '-- none --'] + $assignees;
-            $form['assignee_id']['#description'] = $this->t('The email address the assignee');
-        }
-        else {
-            $form['assignee_id']['#type'] = 'textfield';
-            $form['assignee_id']['#attribute'] = [
-                'type' => 'number'
-            ];
-        }
-
-        $form['collaborators'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Ticket CCs'),
-            '#description' => $this->t('Users to add as cc\'s when creating a ticket.'),
-            '#default_value' => $this->configuration['collaborators'],
-            '#multiple' => true,
-            '#required' => false
-        ];
-
-        $form['custom_fields'] = [
+        $form['ticket']['custom_fields'] = [
             '#type' => 'webform_codemirror',
             '#mode' => 'yaml',
             '#title' => $this->t('Ticket Custom Fields'),
