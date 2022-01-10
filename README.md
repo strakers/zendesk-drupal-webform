@@ -49,3 +49,10 @@ congrats! You've successfully setup up the handler integration.
 ### Store Zendesk Ticket ID
 
 This module can help to keep track of the Zendesk Ticket ID directly on each submission. You'll need to create a hidden field when building the form, and then set it as the Zendesk Ticket ID Field in the handler configuration form.
+
+### Auto-delete Webform Submissions
+
+Alternatively, you can configure this module to automatically delete the webform submission. This would usually be used in situations where security is a factor, or if there is no need to retain the submission records. Please note the following:
+
+- Ticket deletion occurs *only* after successful Zendesk ticket creation. If there are any errors during Zendesk ticket creation, the webform submission will not be deleted.
+- The deletion of webform submissions is permanent and cannot be undone.
