@@ -1,18 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
 ## [9.x-2.1] - 2022-01-10
 ### Added
-- Option to automatically delete submissions after successful Zendesk ticket creation
+- Implemented config for automatically deleting submissions after successful Zendesk ticket creation
 
 ### Changed
 - Organized Handler configuration form fields into sections
-- Fix issue preventing fields contained in sections from updating when saved
-- Update README to mention new auto-delete functionality
+- Fixed issue preventing fields contained in sections from updating when saved
+- Updated README to mention new auto-delete functionality
 
 
-## [2.0.0] - 2021-08-31
+## [2.0.0], [9.x-2.0] - 2021-08-31
 ### Changed
 - Updated dependencies for Drupal 9
+- Switched to Drupal's flavor of semantic versioning
 
 ### Fixed
 - Fixed #42 Issue preventing the Zendesk Handler Add/Edit form from loading in Drupal 9
@@ -111,7 +114,9 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.0...9.x-2.x-dev
+[9.x-2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.0...9.x-2.1
+[9.x-2.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...9.x-2.0
 [2.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v0.3.0...v1.0.0
