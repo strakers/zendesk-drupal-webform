@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [9.x-2.1] - 2022-01-10
 ### Added
 - Option to automatically delete submissions after successful Zendesk ticket creation
 
