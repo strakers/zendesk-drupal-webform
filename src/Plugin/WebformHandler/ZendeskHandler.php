@@ -79,6 +79,7 @@ class ZendeskHandler extends WebformHandlerBase
             'priority' => 'normal',
             'status' => 'new',
             'assignee_id' => '',
+            'group_id' => '',
             'type' => 'question',
             'collaborators' => '',
             'custom_fields' => '',
@@ -198,7 +199,38 @@ class ZendeskHandler extends WebformHandlerBase
                 'link' => $this->getWebform()->toLink($this->t('Edit'), 'handlers')->toString(),
             ]);
         }
+        $groups = [];
 
+        try {
+            // get available groups from zendesk
+            // initiate api client
+            $client = new ZendeskClient();
+
+            // get list of all groups who are either agents or admins
+            $response_groups = $client->groups()->findAll()->groups;
+
+            // store found groups
+            foreach($response_groups as $response_group){
+                $groups[ $response_group->id ] = $response_group->name;
+            }
+
+            // order agents by name
+            asort($groups);
+
+        }
+        catch( \Exception $e ){
+
+            // Encode HTML entities to prevent broken markup from breaking the page.
+            $message = nl2br(htmlentities($e->getMessage()));
+
+            // Log error message.
+            $this->getLogger()->error('Retrieval of groups for @form webform Zendesk handler failed. @exception: @message. Click to edit @link.', [
+                '@exception' => get_class($e),
+                '@form' => $this->getWebform()->label(),
+                '@message' => $message,
+                'link' => $this->getWebform()->toLink($this->t('Edit'), 'handlers')->toString(),
+            ]);
+        }
         // build form sections -----------------------------------------------------------------------------------------
 
         // Basic Settings for Requesters, Assignees, and Cc-ed contacts.
@@ -259,6 +291,27 @@ class ZendeskHandler extends WebformHandlerBase
         else {
             $form['people']['assignee_id']['#type'] = 'textfield';
             $form['people']['assignee_id']['#attribute'] = [
+                'type' => 'number'
+            ];
+        }
+
+        // prep group field
+        // if found groups from Zendesk, populate dropdown.
+        // otherwise provide field to specify assignee ID
+        $form['people']['group_id'] = [
+            '#title' => $this->t('Ticket group'),
+            '#description' => $this->t('The id of the intended group'),
+            '#default_value' => $this->configuration['group_id'],
+            '#required' => false
+        ];
+        if(! empty($groups) ){
+            $form['people']['group_id']['#type'] = 'webform_select_other';
+            $form['people']['group_id']['#options'] = ['' => '-- none --'] + $groups;
+            $form['people']['group_id']['#description'] = $this->t('The name of the group');
+        }
+        else {
+            $form['people']['group_id']['#type'] = 'textfield';
+            $form['people']['group_id']['#attribute'] = [
                 'type' => 'number'
             ];
         }
@@ -596,7 +649,6 @@ class ZendeskHandler extends WebformHandlerBase
 
                 // Encode HTML entities to prevent broken markup from breaking the page.
                 $message = nl2br(htmlentities($e->getMessage()));
-
                 // Log error message.
                 $this->getLogger()->error('@form webform submission to zendesk failed. @exception: @message. Click to edit @link.', [
                     '@exception' => get_class($e),
