@@ -5,14 +5,19 @@ Add a webform handler to create Zendesk tickets from Drupal webform submissions.
 With [composer/installers](https://github.com/composer/installers) in effect, Drupal packages are installed to their own specified paths. However the default 
 configs for Drupal packages don't include custom modules. We'll need to add one:
 
-Add the following to the `extra.installer-paths` object:
+If not already present, add the following to the `extra.installer-paths` object in your composer file:
 ```text
 "web/modules/custom/{$name}": ["type:drupal-custom-module"],
 ```
 
-Then, run the following command in your terminal to require this package:
+Then, for Drupal 9, run the following command in your terminal to require this package:
 ```bash
 composer require strakez/zendesk-webform
+```
+
+For Drupal 8, version `v1.1.0` retains support:
+```bash
+composer require strakez/zendesk-webform:^1.1
 ```
 
 
@@ -44,3 +49,10 @@ congrats! You've successfully setup up the handler integration.
 ### Store Zendesk Ticket ID
 
 This module can help to keep track of the Zendesk Ticket ID directly on each submission. You'll need to create a hidden field when building the form, and then set it as the Zendesk Ticket ID Field in the handler configuration form.
+
+### Auto-delete Webform Submissions
+
+Alternatively, you can configure this module to automatically delete the webform submission. This would usually be used in situations where security is a factor, or if there is no need to retain the submission records. Please note the following:
+
+- Ticket deletion occurs *only* after successful Zendesk ticket creation. If there are any errors during Zendesk ticket creation, the webform submission will not be deleted.
+- The deletion of webform submissions is permanent and cannot be undone.

@@ -20,6 +20,7 @@ use Drupal\webform\WebformTokenManagerInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\file\Entity\File;
 use Drupal\zendesk_webform\Utils\Utility;
+use Drupal\Core\Config\ImmutableConfig;
 
 
 /**
@@ -52,31 +53,12 @@ class ZendeskHandler extends WebformHandlerBase
      */
     public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
 
-
-        $logger_factory = $container->get('logger.factory');
-        $config_factory = $container->get('config.factory');
-        $entity_type_manager = $container->get('entity_type.manager');
-        $webform_submission_conditions_validator = $container->get('webform_submission.conditions_validator');
-        $webform_token_manager = $container->get('webform.token_manager');
-
         /**
-         * @var LoggerChannelFactoryInterface $logger_factory
-         * @var ConfigFactoryInterface $config_factory
-         * @var EntityTypeManagerInterface $entity_type_manager
-         * @var WebformSubmissionConditionsValidatorInterface $webform_submission_conditions_validator
          * @var WebformTokenManagerInterface $webform_token_manager
          */
 
-        $static = new static(
-            $configuration,
-            $plugin_id,
-            $plugin_definition,
-            $logger_factory,
-            $config_factory,
-            $entity_type_manager,
-            $webform_submission_conditions_validator
-        );
-
+        $static = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+        $webform_token_manager = $container->get('webform.token_manager');
         $static->setTokenManager( $webform_token_manager );
 
         return $static;
@@ -101,6 +83,7 @@ class ZendeskHandler extends WebformHandlerBase
             'collaborators' => '',
             'custom_fields' => '',
             'ticket_id_field' => '',
+            'delete_after_delivery' => 0,
         ];
     }
 
@@ -120,7 +103,7 @@ class ZendeskHandler extends WebformHandlerBase
     {
 
         $webform_fields = $this->getWebform()->getElementsDecoded();
-        $zendesk_subdomain = \Drupal::config('zendesk_webform.adminsettings')->get('subdomain');
+        $zendesk_subdomain = $this->getAdminSettings()->get('subdomain');
         $options = [
             'email' => [''],
             'name' => [''],
@@ -216,9 +199,32 @@ class ZendeskHandler extends WebformHandlerBase
             ]);
         }
 
-        // build form fields
+        // build form sections -----------------------------------------------------------------------------------------
 
-        $form['requester_name'] = [
+        // Basic Settings for Requesters, Assignees, and Cc-ed contacts.
+        $form['people'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Ticket Contact Details'),
+            '#open' => TRUE,
+        ];
+
+        // Basic Settings for Ticket Content and Tags.
+        $form['content'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Ticket Content Settings'),
+            '#open' => TRUE,
+        ];
+
+        // Basic Settings for Ticket Fields.
+        $form['ticket'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Ticket Field Settings'),
+            '#open' => TRUE,
+        ];
+
+        // build form fields -------------------------------------------------------------------------------------------
+
+        $form['people']['requester_name'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Requester name'),
             '#description' => $this->t('The name of the user who requested this ticket. Select from available name fields, or specify a name.'),
@@ -227,7 +233,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        $form['requester_email'] = [
+        $form['people']['requester_email'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Requester email address'),
             '#description' => $this->t('The email address of user who requested this ticket. Select from available email fields, or specify an email address.'),
@@ -236,7 +242,37 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
-        $form['subject'] = [
+        // prep assignees field
+        // if found assignees from Zendesk, populate dropdown.
+        // otherwise provide field to specify assignee ID
+        $form['people']['assignee_id'] = [
+            '#title' => $this->t('Ticket Assignee'),
+            '#description' => $this->t('The id of the intended assignee'),
+            '#default_value' => $this->configuration['assignee_id'],
+            '#required' => false
+        ];
+        if(! empty($assignees) ){
+            $form['people']['assignee_id']['#type'] = 'webform_select_other';
+            $form['people']['assignee_id']['#options'] = ['' => '-- none --'] + $assignees;
+            $form['people']['assignee_id']['#description'] = $this->t('The email address the assignee');
+        }
+        else {
+            $form['people']['assignee_id']['#type'] = 'textfield';
+            $form['people']['assignee_id']['#attribute'] = [
+                'type' => 'number'
+            ];
+        }
+
+        $form['people']['collaborators'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Ticket CCs'),
+            '#description' => $this->t('Users to add as cc\'s when creating a ticket.'),
+            '#default_value' => $this->configuration['collaborators'],
+            '#multiple' => true,
+            '#required' => false
+        ];
+
+        $form['content']['subject'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Subject'),
             '#description' => $this->t('The value of the subject field for this ticket'),
@@ -244,7 +280,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
-        $form['comment'] = [
+        $form['content']['comment'] = [
             '#type' => 'textarea',
             '#title' => $this->t('Ticket Body'),
             '#description' => $this->t('The initial comment/message of the ticket.'),
@@ -253,7 +289,17 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => true
         ];
 
-        $form['type'] = [
+        // space separated tags
+        $form['content']['tags'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Ticket Tags'),
+            '#description' => $this->t('The list of tags applied to this ticket.'),
+            '#default_value' => $this->configuration['tags'],
+            '#multiple' => true,
+            '#required' => false
+        ];
+
+        $form['ticket']['type'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Type'),
             '#description' => $this->t('The type of this ticket. Possible values: "problem", "incident", "question" or "task".'),
@@ -267,17 +313,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        // space separated tags
-        $form['tags'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Ticket Tags'),
-            '#description' => $this->t('The list of tags applied to this ticket.'),
-            '#default_value' => $this->configuration['tags'],
-            '#multiple' => true,
-            '#required' => false
-        ];
-
-        $form['priority'] = [
+        $form['ticket']['priority'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Priority'),
             '#description' => $this->t('The urgency with which the ticket should be addressed. Possible values: "urgent", "high", "normal", "low".'),
@@ -291,7 +327,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        $form['status'] = [
+        $form['ticket']['status'] = [
             '#type' => 'select',
             '#title' => $this->t('Ticket Status'),
             '#description' => $this->t('The state of the ticket. Possible values: "new", "open", "pending", "hold", "solved", "closed".'),
@@ -307,37 +343,7 @@ class ZendeskHandler extends WebformHandlerBase
             '#required' => false
         ];
 
-        // prep assignees field
-        // if found assignees from Zendesk, populate dropdown.
-        // otherwise provide field to specify assignee ID
-        $form['assignee_id'] = [
-            '#title' => $this->t('Ticket Assignee'),
-            '#description' => $this->t('The id of the intended assignee'),
-            '#default_value' => $this->configuration['assignee_id'],
-            '#required' => false
-        ];
-        if(! empty($assignees) ){
-            $form['assignee_id']['#type'] = 'webform_select_other';
-            $form['assignee_id']['#options'] = ['' => '-- none --'] + $assignees;
-            $form['assignee_id']['#description'] = $this->t('The email address the assignee');
-        }
-        else {
-            $form['assignee_id']['#type'] = 'textfield';
-            $form['assignee_id']['#attribute'] = [
-                'type' => 'number'
-            ];
-        }
-
-        $form['collaborators'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Ticket CCs'),
-            '#description' => $this->t('Users to add as cc\'s when creating a ticket.'),
-            '#default_value' => $this->configuration['collaborators'],
-            '#multiple' => true,
-            '#required' => false
-        ];
-
-        $form['custom_fields'] = [
+        $form['ticket']['custom_fields'] = [
             '#type' => 'webform_codemirror',
             '#mode' => 'yaml',
             '#title' => $this->t('Ticket Custom Fields'),
@@ -356,16 +362,42 @@ class ZendeskHandler extends WebformHandlerBase
             '#more' => '<div class="zd-ticket-reference">' . Utility::convertTable($form_ticket_fields) .'</div>',
         ];
 
-        // display link for token variables
-        $form['token_link'] = $this->getTokenManager()->buildTreeLink();
+        // hide display link for token variables - already displayed at bottom
+        //$form['token_link'] = $this->getTokenManager()->buildTreeLink();
 
-        $form['ticket_id_field'] = [
+        // build advanced section --------------------------------------------------------------------------------------
+
+        // Advanced Settings.
+        $form['advanced'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Advanced Configurations'),
+            '#open' => TRUE,
+        ];
+
+        $form['advanced']['ticket_id_field'] = [
             '#type' => 'webform_select_other',
             '#title' => $this->t('Zendesk Ticket ID Field'),
-            '#description' => $this->t('The name of hidden field which will be updated with the created Ticket ID.'),
+            '#description' => $this->t('<div id="help" style="margin:.5em 0">The name of hidden field which will store the created Zendesk Ticket ID.</div>'),
+            '#help' => $this->t('Make sure to build at least one hidden field for use.'),
+            '#description_display' => 'before',
             '#default_value' => $this->configuration['ticket_id_field'],
             '#options' => $options['hidden'],
             '#required' => false
+        ];
+
+        $form['advanced']['delete_option_label'] = [
+            '#type' => 'label',
+            '#title' => $this->t('Record Deletion On Delivery'),
+        ];
+
+        $form['advanced']['delete_after_delivery'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Enable record deletion after delivery'),
+            '#required' => false,
+            '#default_value' => $this->configuration['delete_after_delivery'],
+            '#description' => $this->t('<div id="help">If checked, the webform submission data will be deleted after the Zendesk ticket has been successfully created. The submission will <strong>not</strong> be deleted if ticket creation fails. Please note that deleted submissions cannot be recovered.</div><br />'),
+            '#help' => $this->t('Select to auto-delete tickets'),
+            '#description_display' => 'before',
         ];
 
         return parent::buildConfigurationForm($form, $form_state);
@@ -408,10 +440,20 @@ class ZendeskHandler extends WebformHandlerBase
     {
         parent::submitConfigurationForm($form, $form_state);
 
+        // loop through submission values and update only those specified in the configuration
         $submission_value = $form_state->getValues();
-        foreach($this->configuration as $key => $value){
-            if(isset($submission_value[$key])){
-                $this->configuration[$key] = $submission_value[$key];
+        foreach($submission_value as $key => $value) {
+            // check for field values nested in sections
+            if (is_array($value)) {
+                foreach($value as $sub_key => $sub_value) {
+                    if (array_key_exists($sub_key,$this->configuration)) {
+                        $this->configuration[$sub_key] = $sub_value;
+                    }
+                }
+            }
+            // check for field values outside
+            elseif (array_key_exists($key,$this->configuration)) {
+                $this->configuration[$key] = $value;
             }
         }
     }
@@ -529,6 +571,13 @@ class ZendeskHandler extends WebformHandlerBase
                 // create ticket
                 $new_ticket = $client->tickets()->create($request);
 
+
+                // if configured, delete webform submission after ticket creation, and end
+                if ($new_ticket && $configuration['delete_after_delivery']) {
+                    $webform_submission->delete();
+                    return;
+                }
+
                 // retrieve the name of the field in which to store the created Zendesk Ticket ID
                 $zendesk_ticket_id_field_name = $configuration['ticket_id_field'];
                 
@@ -581,6 +630,13 @@ class ZendeskHandler extends WebformHandlerBase
             '#theme' => 'markup',
             '#markup' => implode('<br>',$markup),
         ];
+    }
+
+    /**
+     * @return ImmutableConfig
+     */
+    public function getAdminSettings(){
+        return \Drupal::config('zendesk_webform.adminsettings');
     }
 
     /**
