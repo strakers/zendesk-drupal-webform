@@ -8,11 +8,13 @@ For Drupal 9+, run the following command in your terminal to install this packag
 ```bash
 composer require strakez/zendesk-webform
 ```
+> NOTE: Drupal 11 compatibility is currently in-progress.
 
 For Drupal 8, version `v1.1.0` retains support:
 ```bash
 composer require 'strakez/zendesk-webform:^1.1'
 ```
+
 
 
 ## Setup
