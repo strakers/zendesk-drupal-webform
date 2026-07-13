@@ -2,8 +2,12 @@
     "name": "strakez/zendesk-webform",
     "description": "Add a webform handler to create Zendesk tickets from Drupal webform submissions",
     "homepage": "https://github.com/strakers/zendesk-drupal-webform",
-    "keywords": ["Drupal", "Zendesk", "Webform"],
-    "type": "drupal-custom-module",
+    "keywords": [
+        "Drupal",
+        "Zendesk",
+        "Webform"
+    ],
+    "type": "drupal-module",
     "license": "MIT",
     "authors": [
         {
