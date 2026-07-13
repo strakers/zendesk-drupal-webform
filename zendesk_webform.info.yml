@@ -7,7 +7,7 @@ type: module
 dependencies:
   - webform:webform (>=6.2)
 
-version: '2.0.0'
+version: '3.0.0'
 core_version_requirement: ^10 || ^11
 project: 'zendesk_webform'
 

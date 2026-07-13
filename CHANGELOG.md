@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [3.0.0] - 2026-07-13
 ### Changed
 - Modernized for Drupal 10/11: `core_version_requirement: ^10 || ^11`, PHP `>=8.1`
 - Updated `zendesk/zendesk_api_client_php` dependency to `^4.1` (from `^2.2.11`)
@@ -123,7 +125,8 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.0...9.x-2.x-dev
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v3.0.0...develop
+[3.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.1...v3.0.0
 [9.x-2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.0...9.x-2.1
 [9.x-2.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...9.x-2.0
 [2.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...v2.0.0
