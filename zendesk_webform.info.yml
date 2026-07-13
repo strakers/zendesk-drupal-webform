@@ -3,15 +3,14 @@ description: Add a webform handler to create Zendesk tickets from Drupal webform
 package: Zendesk
 
 type: module
-# core: 9.x
 
 dependencies:
-  - webform:webform (>=8.x-5.x)
+  - webform:webform (>=6.2)
 
 version: '2.0.0'
-core_version_requirement: ^9
+core_version_requirement: ^10 || ^11
 project: 'zendesk_webform'
 
 configure: zendesk_webform.admin_settings
 
-php: 7.1
+php: 8.1

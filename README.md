@@ -10,14 +10,15 @@ If not already present, add the following to the `extra.installer-paths` object 
 "web/modules/custom/{$name}": ["type:drupal-custom-module"],
 ```
 
-Then, for Drupal 9, run the following command in your terminal to require this package:
+Then, for Drupal 10/11, run the following command in your terminal to require this package:
 ```bash
 composer require strakez/zendesk-webform
 ```
 
-For Drupal 8, version `v1.1.0` retains support:
+For older Drupal versions, earlier releases retain support:
 ```bash
-composer require strakez/zendesk-webform:^1.1
+composer require strakez/zendesk-webform:^2.0  # Drupal 9
+composer require strakez/zendesk-webform:^1.1  # Drupal 8
 ```
 
 
@@ -56,3 +57,25 @@ Alternatively, you can configure this module to automatically delete the webform
 
 - Ticket deletion occurs *only* after successful Zendesk ticket creation. If there are any errors during Zendesk ticket creation, the webform submission will not be deleted.
 - The deletion of webform submissions is permanent and cannot be undone.
+
+## Local Development
+
+This repo includes a [ddev](https://ddev.com) environment built on the [ddev/ddev-drupal-contrib](https://github.com/ddev/ddev-drupal-contrib) add-on, which scaffolds a throwaway Drupal site around this module so you can develop and test it in isolation.
+
+```bash
+ddev start
+ddev poser              # composer install: scaffolds Drupal core + this module's dependencies
+ddev symlink-project    # symlinks this repo into web/modules/custom/zendesk_webform (runs automatically on `ddev start` after the first `ddev poser`)
+ddev drush site-install standard -y
+ddev drush en webform zendesk_webform -y
+```
+
+Your test site is then available at the URL printed by `ddev describe`.
+
+Other useful commands provided by the add-on:
+- `ddev phpunit` — run PHPUnit tests
+- `ddev phpcs` / `ddev phpcbf` — check/fix Drupal coding standards
+- `ddev phpstan` — static analysis
+- `ddev core-version ^11` — switch the scaffolded site to a different core version
+
+See the [add-on README](https://github.com/ddev/ddev-drupal-contrib) for more details.
