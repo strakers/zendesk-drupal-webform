@@ -467,59 +467,9 @@ class ZendeskHandler extends WebformHandlerBase
         // run only for new submissions
         if (! $update) {
 
-            // declare working variables
-            $request = [];
             $submission_fields = $webform_submission->toArray(TRUE);
             $configuration = $this->getTokenManager()->replace($this->configuration, $webform_submission);
-
-            // Allow for either values coming from other fields or static/tokens
-            foreach ($this->defaultConfigurationNames() as $field) {
-                $request[$field] = $configuration[$field];
-                if (!empty($submission_fields['data'][$configuration[$field]])) {
-                    $request[$field] = $submission_fields['data'][$configuration[$field]];
-                }
-            }
-
-            // clean up tags
-            $request['tags'] = Utility::cleanTags( $request['tags'] );
-            $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
-
-            // restructure requester
-            if(!isset($request['requester'])){
-                $request['requester'] = $request['requester_name']
-                    ? [
-                        'name' => Utility::convertName($request['requester_name']),
-                        'email' => $request['requester_email'],
-                    ]
-                    : $request['requester_email'];
-
-                unset($request['requester_name']);
-                unset($request['requester_email']);
-            }
-
-            // restructure comment array
-            if(!isset($request['comment']['body'])){
-                $comment = $request['comment'];
-                $request['comment'] = [
-                    'body' => $comment
-                ];
-            }
-
-            // convert custom fields format from [key:data} to [id:key,value:data] for Zendesk field referencing
-            $custom_fields = Yaml::decode($request['custom_fields']);
-            unset($request['custom_fields']);
-            $request['custom_fields'] = [];
-            if($custom_fields) {
-                foreach ($custom_fields as $key => $value) {
-                    $request['custom_fields'][] = [
-                        'id' => $key,
-                        'value' => $value
-                    ];
-                }
-            }
-
-            // set external_id to connect zendesk ticket with submission ID
-            $request['external_id'] = $webform_submission->id();
+            $request = $this->buildTicketRequest($configuration, $submission_fields, $webform_submission);
 
             // get list of all webform fields with a file field type
             $file_fields = $this->getWebformFieldsWithFiles();
@@ -607,6 +557,69 @@ class ZendeskHandler extends WebformHandlerBase
             }
         }
         return;
+    }
+
+    /**
+     * Builds the Zendesk ticket creation request from handler configuration and submission data.
+     * @param array $configuration
+     * @param array $submission_fields
+     * @param WebformSubmissionInterface $webform_submission
+     * @return array
+     */
+    protected function buildTicketRequest(array $configuration, array $submission_fields, WebformSubmissionInterface $webform_submission)
+    {
+        $request = [];
+
+        // Allow for either values coming from other fields or static/tokens
+        foreach ($this->defaultConfigurationNames() as $field) {
+            $request[$field] = $configuration[$field];
+            if (!empty($submission_fields['data'][$configuration[$field]])) {
+                $request[$field] = $submission_fields['data'][$configuration[$field]];
+            }
+        }
+
+        // clean up tags
+        $request['tags'] = Utility::cleanTags( $request['tags'] );
+        $request['collaborators'] = preg_split("/[^a-z0-9_\-@\.']+/i", $request['collaborators'] );
+
+        // restructure requester
+        if(!isset($request['requester'])){
+            $request['requester'] = $request['requester_name']
+                ? [
+                    'name' => Utility::convertName($request['requester_name']),
+                    'email' => $request['requester_email'],
+                ]
+                : $request['requester_email'];
+
+            unset($request['requester_name']);
+            unset($request['requester_email']);
+        }
+
+        // restructure comment array
+        if(!isset($request['comment']['body'])){
+            $comment = $request['comment'];
+            $request['comment'] = [
+                'body' => $comment
+            ];
+        }
+
+        // convert custom fields format from [key:data} to [id:key,value:data] for Zendesk field referencing
+        $custom_fields = Yaml::decode($request['custom_fields']);
+        unset($request['custom_fields']);
+        $request['custom_fields'] = [];
+        if($custom_fields) {
+            foreach ($custom_fields as $key => $value) {
+                $request['custom_fields'][] = [
+                    'id' => $key,
+                    'value' => $value
+                ];
+            }
+        }
+
+        // set external_id to connect zendesk ticket with submission ID
+        $request['external_id'] = $webform_submission->id();
+
+        return $request;
     }
 
     /**

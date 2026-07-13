@@ -3,12 +3,17 @@
 ## [Unreleased]
 
 ## [3.0.0] - 2026-07-13
+### Added
+- Added a PHPUnit test suite (Unit/Kernel/Functional) covering the Utility/Name helpers and the Zendesk webform handler
+- Added `config/schema/zendesk_webform.schema.yml`, providing config schema for the admin settings and the handler's settings (previously missing, which strict config validation flagged)
+- Added a ddev local development environment (via `ddev/ddev-drupal-contrib`) for ongoing module development
+
 ### Changed
 - Modernized for Drupal 10/11: `core_version_requirement: ^10 || ^11`, PHP `>=8.1`
 - Updated `zendesk/zendesk_api_client_php` dependency to `^4.1` (from `^2.2.11`)
 - Updated `webform` dependency constraint to `>=6.2`
 - Removed the committed `composer.lock` (not meaningful for a library-type package)
-- Added a ddev local development environment (via `ddev/ddev-drupal-contrib`) for ongoing module development
+- Extracted the Zendesk ticket request-building logic out of `ZendeskHandler::postSave()` into a new `buildTicketRequest()` method, so it can be tested independently of the live API call
 
 ### Fixed
 - Removed an invalid `#theme: markup` key from the handler summary render array, which logged a spurious "Theme hook markup not found" warning on every Handlers listing page view
