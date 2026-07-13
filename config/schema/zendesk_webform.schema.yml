@@ -1,0 +1,57 @@
+zendesk_webform.adminsettings:
+  type: config_object
+  label: 'Zendesk Integration settings'
+  mapping:
+    subdomain:
+      type: string
+      label: 'Zendesk subdomain'
+    user_email:
+      type: email
+      label: 'Zendesk account email address'
+    web_token:
+      type: string
+      label: 'Zendesk API token'
+
+webform.handler.zendesk:
+  type: mapping
+  label: 'Zendesk'
+  mapping:
+    requester_name:
+      type: string
+      label: 'Requester name'
+    requester_email:
+      type: string
+      label: 'Requester email address'
+    subject:
+      type: label
+      label: 'Subject'
+    comment:
+      type: text
+      label: 'Ticket body'
+    tags:
+      type: string
+      label: 'Ticket tags'
+    priority:
+      type: string
+      label: 'Ticket priority'
+    status:
+      type: string
+      label: 'Ticket status'
+    assignee_id:
+      type: string
+      label: 'Ticket assignee'
+    type:
+      type: string
+      label: 'Ticket type'
+    collaborators:
+      type: string
+      label: 'Ticket CCs'
+    custom_fields:
+      type: text
+      label: 'Ticket custom fields'
+    ticket_id_field:
+      type: string
+      label: 'Zendesk ticket ID field'
+    delete_after_delivery:
+      type: boolean
+      label: 'Enable record deletion after delivery'
