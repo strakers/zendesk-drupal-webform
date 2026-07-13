@@ -1,25 +1,21 @@
 # strakez/zendesk-webform
+
 Add a webform handler to create Zendesk tickets from Drupal webform submissions.
 
 ## Installation
-With [composer/installers](https://github.com/composer/installers) in effect, Drupal packages are installed to their own specified paths. However the default 
-configs for Drupal packages don't include custom modules. We'll need to add one:
 
-If not already present, add the following to the `extra.installer-paths` object in your composer file:
-```text
-"web/modules/custom/{$name}": ["type:drupal-custom-module"],
-```
+Then, for Drupal 10/11, run the following command in your terminal to require this package:
 
-Then, for Drupal 9, run the following command in your terminal to require this package:
 ```bash
 composer require strakez/zendesk-webform
 ```
 
-For Drupal 8, version `v1.1.0` retains support:
-```bash
-composer require strakez/zendesk-webform:^1.1
-```
+For older Drupal versions, earlier releases retain support:
 
+```bash
+composer require strakez/zendesk-webform:^2.0  # Drupal 9
+composer require strakez/zendesk-webform:^1.1  # Drupal 8
+```
 
 ## Setup
 
@@ -32,16 +28,17 @@ Please see the following link for instructions on [retrieving your Zendesk API K
 - Activate the Zendesk Webform module from your site's Extend page.
 
 ### 4) Configure the Zendesk Connection Settings
-- Navigate to the configuration page (found under ***Configuration -> System -> Zendesk Integration Form***), and fill out the required fields. (Note: your API key will be used here.)
+
+- Navigate to the configuration page (found under **_Configuration -> System -> Zendesk Integration Form_**), and fill out the required fields. (Note: your API key will be used here.)
 
 ### 3) Add a Zendesk Handler to a Webform
 
-- Navigate to the desired webform's ***Settings -> Email/Handlers*** page, and click **Add Handler**.
+- Navigate to the desired webform's **_Settings -> Email/Handlers_** page, and click **Add Handler**.
 - Specify settings for the Zendesk ticket to be created.
 
 ### 4) Test
 
-It is recommend to submit a test submission to confirm your settings. If the ticket is created in Zendesk as desired, 
+It is recommend to submit a test submission to confirm your settings. If the ticket is created in Zendesk as desired,
 congrats! You've successfully setup up the handler integration.
 
 ## Additional Notes
@@ -54,5 +51,28 @@ This module can help to keep track of the Zendesk Ticket ID directly on each sub
 
 Alternatively, you can configure this module to automatically delete the webform submission. This would usually be used in situations where security is a factor, or if there is no need to retain the submission records. Please note the following:
 
-- Ticket deletion occurs *only* after successful Zendesk ticket creation. If there are any errors during Zendesk ticket creation, the webform submission will not be deleted.
+- Ticket deletion occurs _only_ after successful Zendesk ticket creation. If there are any errors during Zendesk ticket creation, the webform submission will not be deleted.
 - The deletion of webform submissions is permanent and cannot be undone.
+
+## Local Development
+
+This repo includes a [ddev](https://ddev.com) environment built on the [ddev/ddev-drupal-contrib](https://github.com/ddev/ddev-drupal-contrib) add-on, which scaffolds a throwaway Drupal site around this module so you can develop and test it in isolation.
+
+```bash
+ddev start
+ddev poser              # composer install: scaffolds Drupal core + this module's dependencies
+ddev symlink-project    # symlinks this repo into web/modules/custom/zendesk_webform (runs automatically on `ddev start` after the first `ddev poser`)
+ddev drush site-install standard -y
+ddev drush en webform zendesk_webform -y
+```
+
+Your test site is then available at the URL printed by `ddev describe`.
+
+Other useful commands provided by the add-on:
+
+- `ddev phpunit` — run PHPUnit tests
+- `ddev phpcs` / `ddev phpcbf` — check/fix Drupal coding standards
+- `ddev phpstan` — static analysis
+- `ddev core-version ^11` — switch the scaffolded site to a different core version
+
+See the [add-on README](https://github.com/ddev/ddev-drupal-contrib) for more details.

@@ -2,8 +2,12 @@
     "name": "strakez/zendesk-webform",
     "description": "Add a webform handler to create Zendesk tickets from Drupal webform submissions",
     "homepage": "https://github.com/strakers/zendesk-drupal-webform",
-    "keywords": ["Drupal", "Zendesk", "Webform"],
-    "type": "drupal-custom-module",
+    "keywords": [
+        "Drupal",
+        "Zendesk",
+        "Webform"
+    ],
+    "type": "drupal-module",
     "license": "MIT",
     "authors": [
         {
@@ -12,10 +16,13 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "zendesk/zendesk_api_client_php": "^2.2.11",
-        "drupal/core": ">=9.2",
+        "php": ">=8.1",
+        "zendesk/zendesk_api_client_php": "^4.1",
+        "drupal/core": ">=10.2",
         "drupal/webform": "*"
+    },
+    "require-dev": {
+        "drush/drush": "^12 || ^13"
     },
     "minimum-stability": "dev"
 }

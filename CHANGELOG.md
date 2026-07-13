@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-07-13
+### Changed
+- Modernized for Drupal 10/11: `core_version_requirement: ^10 || ^11`, PHP `>=8.1`
+- Updated `zendesk/zendesk_api_client_php` dependency to `^4.1` (from `^2.2.11`)
+- Updated `webform` dependency constraint to `>=6.2`
+- Removed the committed `composer.lock` (not meaningful for a library-type package)
+- Added a ddev local development environment (via `ddev/ddev-drupal-contrib`) for ongoing module development
+
+### Fixed
+- Removed an invalid `#theme: markup` key from the handler summary render array, which logged a spurious "Theme hook markup not found" warning on every Handlers listing page view
+
 ## [9.x-2.1] - 2022-01-10
 ### Added
 - Implemented config for automatically deleting submissions after successful Zendesk ticket creation
@@ -114,7 +125,8 @@
 - This initial code base
 
 
-[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.0...9.x-2.x-dev
+[Unreleased]: https://github.com/strakers/zendesk-drupal-webform/compare/v3.0.0...develop
+[3.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.1...v3.0.0
 [9.x-2.1]: https://github.com/strakers/zendesk-drupal-webform/compare/9.x-2.0...9.x-2.1
 [9.x-2.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...9.x-2.0
 [2.0.0]: https://github.com/strakers/zendesk-drupal-webform/compare/v1.1.0...v2.0.0
