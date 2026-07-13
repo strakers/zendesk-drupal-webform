@@ -39,14 +39,19 @@ xmlrpc.php
 vendor
 libraries
 .idea
+.ddev
 
-# Ignore the virtualized Drupal site scaffolded by ddev/composer for local
-# module development (see ddev/ddev-drupal-contrib). The module itself lives
-# at the repo root and is symlinked into web/modules/custom/zendesk_webform.
+# Ignore local dev tooling: not needed by consumers of the package, only by
+# contributors developing the module itself (see ddev/ddev-drupal-contrib).
+# The module itself lives at the repo root and is symlinked into
+# web/modules/custom/zendesk_webform by the ddev environment.
 /web/
 /recipes/
 composer.contrib.json
 composer.contrib.lock
+phpcs.xml.dist
+phpstan.neon
+phpstan-baseline.neon
 
 # Ignore local editor/OS footprints
 .vscode/
